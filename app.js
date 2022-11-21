@@ -422,6 +422,12 @@ function myResume() {
   if (alarmSoundisPlaying) {
     alarmSound.play();
   }
+  var button1 = document.querySelector("#button1");
+  var button2 = document.querySelector("#button2");
+  var button3 = document.querySelector("#button3");
+  var pomodoro_time = document.querySelector("#pomodoro-time");
+  var break_time = document.querySelector("#break-time");
+  var long_break_time = document.querySelector("#long-break-time");
 
   myInterval = setInterval(calculation, 1000);
   clearInterval(myInterval2);
