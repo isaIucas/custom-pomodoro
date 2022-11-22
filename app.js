@@ -11,8 +11,13 @@ let myInterval2;
 
 let pomodoro = [];
 let pomodoroPause = [];
-let totalSecondsTrackResult = 0;
-let totalSeconds2TrackResult = 0;
+
+let totalSecondsPomodoro = 0;
+let totalSeconds2PomodoroPause = 0;
+let totalSecondsBreak = 0;
+let totalSeconds2BreakPause = 0;
+let totalSecondsLongBreak = 0;
+let totalSeconds2LongBreakPause = 0;
 
 let shortBreak = [];
 let shortBreakPause = [];
@@ -41,7 +46,7 @@ function calculation() {
     ":" +
     (seconds > 9 ? seconds : "0" + seconds);
 
-  if (Number(alarmTime) * 60 == Number(totalSeconds)) {
+  if (Math.ceil(Number(alarmTime)) == Number(totalSeconds)) {
     alarmSound.play();
     alarmSoundisPlaying = true;
   }
@@ -63,12 +68,9 @@ function calculation2() {
 }
 
 function displayResult() {
-  document.getElementById("column1Header").innerHTML =
-    "Pomodoro:  Pomodoro Pause:";
-  document.getElementById("column2Header").innerHTML =
-    "Short Break: Short Break Pause:";
-  document.getElementById("column3Header").innerHTML =
-    "Long Break: Long Break Pause: ";
+  document.getElementById("column1Header").innerHTML = "Pomodoro:";
+  document.getElementById("column2Header").innerHTML = "Short Break:";
+  document.getElementById("column3Header").innerHTML = "Long Break:";
   document.getElementById("column1Content").innerHTML = "";
   document.getElementById("column2Content").innerHTML = "";
   document.getElementById("column3Content").innerHTML = "";
@@ -94,10 +96,6 @@ function displayResult() {
       longBreakPause[i] +
       "<br/>";
   }
-  console.log("pomodoroPause: " + pomodoroPause);
-  console.log("shortBreakPause: " + shortBreakPause);
-  console.log("longBreakPause: " + longBreakPause);
-  console.log();
 }
 
 function startPomodoro() {
@@ -108,10 +106,10 @@ function startPomodoro() {
 
   hours = Math.floor(totalSeconds / 3600);
   hours2 = Math.floor(totalSeconds2 / 3600);
-  totalSecondsTrackResult += totalSeconds;
-  totalSeconds2TrackResult += totalSeconds2;
 
   if (buttonPressed == "break") {
+    totalSecondsBreak += totalSeconds;
+    totalSeconds2BreakPause += totalSeconds2;
     pomodoro.push("");
     pomodoroPause.push("");
     longBreak.push("");
@@ -136,6 +134,8 @@ function startPomodoro() {
       shortBreakPause.push("");
     }
   } else if (buttonPressed == "long break") {
+    totalSecondsLongBreak += totalSeconds;
+    totalSeconds2LongBreakPause += totalSeconds2;
     pomodoro.push("");
     pomodoroPause.push("");
     shortBreak.push("");
@@ -188,6 +188,8 @@ function startPomodoro() {
   var button1 = document.querySelector("#button1");
   var button2 = document.querySelector("#button2");
   var button3 = document.querySelector("#button3");
+  var button4 = document.querySelector("#button4");
+
   var pomodoro_time = document.querySelector("#pomodoro-time");
   var break_time = document.querySelector("#break-time");
   var long_break_time = document.querySelector("#long-break-time");
@@ -198,6 +200,8 @@ function startPomodoro() {
   pomodoro_time.setAttributeNode(battr2);
   button2.removeAttribute("disabled");
   button3.removeAttribute("disabled");
+  button4.removeAttribute("disabled");
+
   break_time.removeAttribute("disabled");
   long_break_time.removeAttribute("disabled");
   pauseButton.removeAttribute("disabled");
@@ -206,18 +210,11 @@ function startPomodoro() {
 }
 
 function startBreak() {
-  pauseSound = new Audio("Chobits Opening.mp3");
-  alarmSound.pause();
-  alarmSound = new Audio("Cowboy Bebop.mp3");
-  alarmTime =
-    Number(document.getElementById("pomodoro-time").value) *
-    Number("0." + document.getElementById("break-time").value);
-
   hours = Math.floor(totalSeconds / 3600);
   hours2 = Math.floor(totalSeconds2 / 3600);
 
-  totalSecondsTrackResult += totalSeconds;
-  totalSeconds2TrackResult += totalSeconds2;
+  totalSecondsPomodoro += totalSeconds;
+  totalSeconds2PomodoroPause += totalSeconds2;
 
   if (buttonPressed == "pomodoro") {
     shortBreak.push("");
@@ -247,10 +244,17 @@ function startBreak() {
   }
   displayResult();
 
-  reset();
   buttonPressed = "break";
 
-  let totalAlarmSeconds = alarmTime * 60;
+  pauseSound = new Audio("Chobits Opening.mp3");
+  alarmSound.pause();
+  alarmSound = new Audio("Cowboy Bebop.mp3");
+  alarmTime =
+    Number(totalSeconds) *
+    Number("0." + document.getElementById("break-time").value);
+  reset();
+
+  let totalAlarmSeconds = alarmTime;
   alarmSeconds = totalAlarmSeconds % 60;
   alarmMinutes = Math.floor(totalAlarmSeconds / 60);
   alarmHours = Math.floor(totalAlarmSeconds / 3600);
@@ -261,7 +265,9 @@ function startBreak() {
     ":" +
     (alarmMinutes > 9 ? alarmMinutes : "0" + alarmMinutes) +
     ":" +
-    (alarmSeconds > 9 ? alarmSeconds : "0" + alarmSeconds) +
+    (alarmSeconds > 9
+      ? alarmSeconds.toFixed(0)
+      : "0" + alarmSeconds.toFixed(0)) +
     "] Break";
   clearInterval(myInterval);
   var paragraph = document.querySelector("#demo");
@@ -300,18 +306,11 @@ function reset() {
   minutes2 = 0;
 }
 function startLongBreak() {
-  pauseSound = new Audio("Chobits Opening.mp3");
-  alarmSound.pause();
-  alarmSound = new Audio("Hype.mp3");
-  alarmTime =
-    Number(document.getElementById("pomodoro-time").value) *
-    Number("0." + document.getElementById("long-break-time").value);
-
   hours = Math.floor(totalSeconds / 3600);
   hours2 = Math.floor(totalSeconds2 / 3600);
 
-  totalSecondsTrackResult += totalSeconds;
-  totalSeconds2TrackResult += totalSeconds2;
+  totalSecondsPomodoro += totalSeconds;
+  totalSeconds2PomodoroPause += totalSeconds2;
 
   if (buttonPressed == "pomodoro") {
     shortBreak.push("");
@@ -340,10 +339,16 @@ function startLongBreak() {
     }
   }
   displayResult();
+  pauseSound = new Audio("Chobits Opening.mp3");
+  alarmSound.pause();
+  alarmSound = new Audio("Hype.mp3");
+  alarmTime =
+    Number(totalSeconds) *
+    Number("0." + document.getElementById("long-break-time").value);
 
   reset();
   buttonPressed = "long break";
-  let totalAlarmSeconds = alarmTime * 60;
+  let totalAlarmSeconds = alarmTime;
   alarmSeconds = totalAlarmSeconds % 60;
   alarmMinutes = Math.floor(totalAlarmSeconds / 60);
   alarmHours = Math.floor(totalAlarmSeconds / 3600);
@@ -354,7 +359,9 @@ function startLongBreak() {
     ":" +
     (alarmMinutes > 9 ? alarmMinutes : "0" + alarmMinutes) +
     ":" +
-    (alarmSeconds > 9 ? alarmSeconds : "0" + alarmSeconds) +
+    (alarmSeconds > 9
+      ? alarmSeconds.toFixed(0)
+      : "0" + alarmSeconds.toFixed(0)) +
     "] Long Break";
 
   clearInterval(myInterval);
@@ -461,3 +468,74 @@ pauseButton.setAttributeNode(atr2);
 var div2 = document.querySelector("#test2");
 
 div2.appendChild(pauseButton);
+
+function finishButton() {
+  if (buttonPressed == "pomodoro") {
+    totalSecondsPomodoro += totalSeconds;
+    totalSeconds2PomodoroPause += totalSeconds2;
+  } else if (buttonPressed == "break") {
+    totalSecondsBreak += totalSeconds;
+    totalSeconds2BreakPause += totalSeconds2;
+  } else if (buttonPressed == "long break") {
+    totalSecondsLongBreak += totalSeconds;
+    totalSeconds2LongBreakPause += totalSeconds2;
+  }
+
+  clearInterval(myInterval);
+  clearInterval(myInterval2);
+
+  var button1 = document.querySelector("#button1");
+  var button2 = document.querySelector("#button2");
+  var button3 = document.querySelector("#button3");
+  var button4 = document.querySelector("#button4");
+  var pomodoro_time = document.querySelector("#pomodoro-time");
+  var break_time = document.querySelector("#break-time");
+  var long_break_time = document.querySelector("#long-break-time");
+
+  var attr1 = document.createAttribute("disabled");
+  var attr2 = document.createAttribute("disabled");
+  var attr3 = document.createAttribute("disabled");
+  var attr4 = document.createAttribute("disabled");
+  var attr5 = document.createAttribute("disabled");
+  var attr6 = document.createAttribute("disabled");
+  var attr7 = document.createAttribute("disabled");
+  var attr8 = document.createAttribute("disabled");
+  var attr9 = document.createAttribute("disabled");
+
+  button1.setAttributeNode(attr1);
+  button2.setAttributeNode(attr2);
+  button3.setAttributeNode(attr3);
+  button4.setAttributeNode(attr4);
+  pomodoro_time.setAttributeNode(attr5);
+  break_time.setAttributeNode(attr6);
+  long_break_time.setAttributeNode(attr7);
+  pauseButton.setAttributeNode(attr8);
+  resumeButton.setAttributeNode(attr9);
+
+  document.querySelector("#current2").innerHTML =
+    "Today's Pomodoro: " +
+    displayTime(totalSecondsPomodoro) +
+    " paused for : " +
+    displayTime(totalSeconds2PomodoroPause) +
+    "<br/>Today's break: " +
+    displayTime(totalSecondsBreak) +
+    " paused for : " +
+    displayTime(totalSeconds2BreakPause) +
+    "<br/>Today's long break: " +
+    displayTime(totalSecondsLongBreak) +
+    " paused for " +
+    displayTime(totalSeconds2LongBreakPause);
+}
+
+function displayTime(customSeconds) {
+  seconds = customSeconds % 60;
+  minutes = Math.floor(customSeconds / 60);
+  hours = Math.floor(customSeconds / 3600);
+  string =
+    (hours > 9 ? hours : "0" + hours) +
+    ":" +
+    (minutes > 9 ? minutes : "0" + minutes) +
+    ":" +
+    (seconds > 9 ? seconds : "0" + seconds);
+  return string;
+}
