@@ -46,6 +46,9 @@ function calculation() {
     ":" +
     (seconds > 9 ? seconds : "0" + seconds);
 
+  console.log(Number(alarmTime));
+  console.log(Number(totalSeconds));
+
   if (Math.ceil(Number(alarmTime)) == Number(totalSeconds)) {
     alarmSound.play();
     alarmSoundisPlaying = true;
@@ -102,7 +105,7 @@ function startPomodoro() {
   pauseSound = new Audio("Chobits Opening.mp3");
   alarmSound.pause();
   alarmSound = new Audio("Kiznaiver.mp3");
-  alarmTime = document.getElementById("pomodoro-time").value;
+  alarmTime = document.getElementById("pomodoro-time").value * 60;
 
   hours = Math.floor(totalSeconds / 3600);
   hours2 = Math.floor(totalSeconds2 / 3600);
@@ -294,6 +297,9 @@ function startBreak() {
   var battr5 = document.createAttribute("disabled");
   button3.setAttributeNode(battr4);
   long_break_time.setAttributeNode(battr5);
+  pauseButton.removeAttribute("disabled");
+  var button4 = document.querySelector("#button4");
+  button4.removeAttribute("disabled");
 
   alarmSoundisPlaying = false;
 }
@@ -389,6 +395,9 @@ function startLongBreak() {
   var battr5 = document.createAttribute("disabled");
   button3.setAttributeNode(battr4);
   long_break_time.setAttributeNode(battr5);
+  pauseButton.removeAttribute("disabled");
+  var button4 = document.querySelector("#button4");
+  button4.removeAttribute("disabled");
 
   alarmSoundisPlaying = false;
 }
