@@ -46,9 +46,6 @@ function calculation() {
     ":" +
     (seconds > 9 ? seconds : "0" + seconds);
 
-  console.log(Number(alarmTime));
-  console.log(Number(totalSeconds));
-
   if (Math.ceil(Number(alarmTime)) == Number(totalSeconds)) {
     alarmSound.play();
     alarmSoundisPlaying = true;
@@ -79,25 +76,41 @@ function displayResult() {
   document.getElementById("column3Content").innerHTML = "";
 
   for (i = 0; i < pomodoro.length; i++) {
-    document.getElementById("column1Content").innerHTML =
-      document.getElementById("column1Content").innerHTML +
-      pomodoro[i] +
-      pomodoroPause[i] +
-      "<br/>";
+    console.log(pomodoro[i]);
+    var box = document.createElement("div");
+    var boxAtr = document.createAttribute("id");
+    boxAtr.value = "customDiv";
+    box.setAttributeNode(boxAtr);
+    var parentBox = document.querySelector("#column1Content");
+
+    box.textContent = pomodoro[i] + pomodoroPause[i];
+
+    parentBox.appendChild(box);
+    //fill center and right
   }
   for (i = 0; i < shortBreak.length; i++) {
-    document.getElementById("column2Content").innerHTML =
-      document.getElementById("column2Content").innerHTML +
-      shortBreak[i] +
-      shortBreakPause[i] +
-      "<br/>";
+    console.log(shortBreak[i]);
+    var box = document.createElement("div");
+    var boxAtr = document.createAttribute("id");
+    boxAtr.value = "customDiv";
+    box.setAttributeNode(boxAtr);
+    var parentBox = document.querySelector("#column2Content");
+    box.textContent = shortBreak[i] + shortBreakPause[i];
+
+    parentBox.appendChild(box);
+    //fill left and right
   }
   for (i = 0; i < longBreak.length; i++) {
-    document.getElementById("column3Content").innerHTML =
-      document.getElementById("column3Content").innerHTML +
-      longBreak[i] +
-      longBreakPause[i] +
-      "<br/>";
+    console.log(longBreak[i]);
+    var box = document.createElement("div");
+    var boxAtr = document.createAttribute("id");
+    boxAtr.value = "customDiv";
+    box.setAttributeNode(boxAtr);
+    var parentBox = document.querySelector("#column3Content");
+    box.textContent = longBreak[i] + longBreakPause[i];
+
+    parentBox.appendChild(box);
+    //fill left and center
   }
 }
 
@@ -167,7 +180,7 @@ function startPomodoro() {
 
   reset();
   buttonPressed = "pomodoro";
-  let totalAlarmSeconds = alarmTime * 60;
+  let totalAlarmSeconds = alarmTime;
   alarmSeconds = totalAlarmSeconds % 60;
   alarmMinutes = Math.floor(totalAlarmSeconds / 60);
   alarmHours = Math.floor(totalAlarmSeconds / 3600);
@@ -181,6 +194,7 @@ function startPomodoro() {
     (alarmSeconds > 9 ? alarmSeconds : "0" + alarmSeconds) +
     "] Pomodoro";
   clearInterval(myInterval);
+  totalAlarmSeconds = alarmTime * 60;
   var paragraph = document.querySelector("#demo");
   paragraph.textContent = "00:00:00";
   totalSeconds = 0;
