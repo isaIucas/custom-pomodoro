@@ -16,13 +16,15 @@ div {
 }
 
 #customDiv{
+  display: flex;
   border-left: 1px solid black;
   border-right: 1px solid black;
   border-bottom: 1px solid black;
   height: 16px;
-  /*
-  make css style such that " " also fills box
-  */
+}
+
+#customDivTime{
+  border-left: 1px solid black;
 }
 
 #column1Header,#column2Header,#column3Header

@@ -1,17 +1,42 @@
+//count current time
 let totalSeconds = 0;
 let seconds = 0;
 let minutes = 0;
 let myInterval;
-let buttonPressed = "";
 
+//count pause time
 let totalSeconds2 = 0;
 let seconds2 = 0;
 let minutes2 = 0;
 let myInterval2;
 
+let buttonPressed = "";
+
+//keeping track of data points
+//tracking current time and pause time
 let pomodoro = [];
 let pomodoroPause = [];
+let shortBreak = [];
+let shortBreakPause = [];
+let longBreak = [];
+let longBreakPause = [];
+//new tracking: Time Stamp <= Tackling this one
+let oldDate;
+let CurrentDate;
 
+let pomodoroDate = [];
+let shortBreakDate = [];
+let longBreakDate = [];
+//new tracking: Notes
+let pomodoroNotes = [];
+let shortBreakNotes = [];
+let longBreakNotes = [];
+//new tracking: additional data/following score
+let pomodoroScore = [];
+let shortBreakScore = [];
+let longBreakScore = [];
+
+//total accumulation of seconds for displaying results
 let totalSecondsPomodoro = 0;
 let totalSeconds2PomodoroPause = 0;
 let totalSecondsBreak = 0;
@@ -19,16 +44,9 @@ let totalSeconds2BreakPause = 0;
 let totalSecondsLongBreak = 0;
 let totalSeconds2LongBreakPause = 0;
 
-let shortBreak = [];
-let shortBreakPause = [];
-
-let longBreak = [];
-let longBreakPause = [];
-
 let alarmSound = new Audio("Kiznaiver.mp3");
 let alarmTime;
 let alarmSoundisPlaying = false;
-
 let pauseSound = new Audio("Chobits Opening.mp3");
 
 // Update the count down every 1 second
@@ -83,10 +101,23 @@ function displayResult() {
     box.setAttributeNode(boxAtr);
     var parentBox = document.querySelector("#column1Content");
 
-    box.textContent = pomodoro[i] + pomodoroPause[i];
+    var smallerBox = document.createElement("div");
+    var smallerBoxAtr = document.createAttribute("id");
+    smallerBoxAtr.value = "customDivDate";
+    smallerBox.setAttributeNode(smallerBoxAtr);
+
+    var smallerBox2 = document.createElement("div");
+    var smallerBox2Atr = document.createAttribute("id");
+    smallerBox2Atr.value = "customDivTime";
+    smallerBox2.setAttributeNode(smallerBox2Atr);
+
+    smallerBox.textContent = pomodoroDate[i];
+    //String split to just get the time LOL <=
+    smallerBox2.textContent = pomodoro[i] + pomodoroPause[i];
 
     parentBox.appendChild(box);
-    //fill center and right
+    box.appendChild(smallerBox);
+    box.appendChild(smallerBox2);
   }
   for (i = 0; i < shortBreak.length; i++) {
     console.log(shortBreak[i]);
@@ -95,10 +126,23 @@ function displayResult() {
     boxAtr.value = "customDiv";
     box.setAttributeNode(boxAtr);
     var parentBox = document.querySelector("#column2Content");
-    box.textContent = shortBreak[i] + shortBreakPause[i];
+
+    var smallerBox = document.createElement("div");
+    var smallerBoxAtr = document.createAttribute("id");
+    smallerBoxAtr.value = "customDivDate";
+    smallerBox.setAttributeNode(smallerBoxAtr);
+
+    var smallerBox2 = document.createElement("div");
+    var smallerBox2Atr = document.createAttribute("id");
+    smallerBox2Atr.value = "customDivTime";
+    smallerBox2.setAttributeNode(smallerBox2Atr);
+
+    smallerBox.textContent = shortBreakDate[i];
+    smallerBox2.textContent = shortBreak[i] + shortBreakPause[i];
 
     parentBox.appendChild(box);
-    //fill left and right
+    box.appendChild(smallerBox);
+    box.appendChild(smallerBox2);
   }
   for (i = 0; i < longBreak.length; i++) {
     console.log(longBreak[i]);
@@ -107,14 +151,33 @@ function displayResult() {
     boxAtr.value = "customDiv";
     box.setAttributeNode(boxAtr);
     var parentBox = document.querySelector("#column3Content");
-    box.textContent = longBreak[i] + longBreakPause[i];
+
+    var smallerBox = document.createElement("div");
+    var smallerBoxAtr = document.createAttribute("id");
+    smallerBoxAtr.value = "customDivDate";
+    smallerBox.setAttributeNode(smallerBoxAtr);
+
+    var smallerBox2 = document.createElement("div");
+    var smallerBox2Atr = document.createAttribute("id");
+    smallerBox2Atr.value = "customDivTime";
+    smallerBox2.setAttributeNode(smallerBox2Atr);
+
+    smallerBox.textContent = longBreakDate[i];
+    smallerBox2.textContent = longBreak[i] + longBreakPause[i];
 
     parentBox.appendChild(box);
-    //fill left and center
+    box.appendChild(smallerBox);
+    box.appendChild(smallerBox2);
   }
 }
 
+let firstButtonOfTheDay = false;
+
 function startPomodoro() {
+  if (firstButtonOfTheDay == false) {
+    currentDate = new Date();
+    firstButtonOfTheDay = true;
+  }
   pauseSound = new Audio("Chobits Opening.mp3");
   alarmSound.pause();
   alarmSound = new Audio("Kiznaiver.mp3");
@@ -126,16 +189,28 @@ function startPomodoro() {
   if (buttonPressed == "break") {
     totalSecondsBreak += totalSeconds;
     totalSeconds2BreakPause += totalSeconds2;
+
     pomodoro.push("");
     pomodoroPause.push("");
+    pomodoroDate.push("");
+
     longBreak.push("");
     longBreakPause.push("");
+    longBreakDate.push("");
+
     shortBreak.push(
       (hours > 9 ? hours : "0" + hours) +
         ":" +
         (minutes > 9 ? minutes : "0" + minutes) +
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
+    );
+    oldDate = currentDate;
+    currentDate = new Date();
+    shortBreakDate.push(
+      oldDate.toLocaleString().split(", ")[1] +
+        "~" +
+        currentDate.toLocaleString().split(", ")[1]
     );
     if (seconds2 > 0) {
       shortBreakPause.push(
@@ -152,16 +227,28 @@ function startPomodoro() {
   } else if (buttonPressed == "long break") {
     totalSecondsLongBreak += totalSeconds;
     totalSeconds2LongBreakPause += totalSeconds2;
+
     pomodoro.push("");
     pomodoroPause.push("");
+    pomodoroDate.push("");
+
     shortBreak.push("");
     shortBreakPause.push("");
+    shortBreakDate.push("");
+
     longBreak.push(
       (hours > 9 ? hours : "0" + hours) +
         ":" +
         (minutes > 9 ? minutes : "0" + minutes) +
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
+    );
+    oldDate = currentDate;
+    currentDate = new Date();
+    longBreakDate.push(
+      oldDate.toLocaleString().split(", ")[1] +
+        "~" +
+        currentDate.toLocaleString().split(", ")[1]
     );
     if (seconds2 > 0) {
       longBreakPause.push(
@@ -233,11 +320,20 @@ function startBreak() {
   totalSecondsPomodoro += totalSeconds;
   totalSeconds2PomodoroPause += totalSeconds2;
 
+  if (firstButtonOfTheDay == false) {
+    currentDate = new Date();
+    firstButtonOfTheDay = true;
+  }
+
   if (buttonPressed == "pomodoro") {
     shortBreak.push("");
     shortBreakPause.push("");
+    shortBreakDate.push("");
+
     longBreak.push("");
     longBreakPause.push("");
+    longBreakDate.push("");
+
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
         ":" +
@@ -246,6 +342,13 @@ function startBreak() {
         (seconds > 9 ? seconds : "0" + seconds)
     );
     hours = Math.floor(totalSeconds2 / 3600);
+    oldDate = currentDate;
+    currentDate = new Date();
+    pomodoroDate.push(
+      oldDate.toLocaleString().split(", ")[1] +
+        "~" +
+        currentDate.toLocaleString().split(", ")[1]
+    );
     if (seconds2 > 0) {
       pomodoroPause.push(
         " paused for " +
@@ -332,11 +435,20 @@ function startLongBreak() {
   totalSecondsPomodoro += totalSeconds;
   totalSeconds2PomodoroPause += totalSeconds2;
 
+  if (firstButtonOfTheDay == false) {
+    currentDate = new Date();
+    firstButtonOfTheDay = true;
+  }
+
   if (buttonPressed == "pomodoro") {
     shortBreak.push("");
     shortBreakPause.push("");
+    shortBreakDate.push("");
+
     longBreak.push("");
     longBreakPause.push("");
+    longBreakDate.push("");
+
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
         ":" +
@@ -345,6 +457,13 @@ function startLongBreak() {
         (seconds > 9 ? seconds : "0" + seconds)
     );
     hours = Math.floor(totalSeconds2 / 3600);
+    oldDate = currentDate;
+    currentDate = new Date();
+    pomodoroDate.push(
+      oldDate.toLocaleString().split(", ")[1] +
+        "~" +
+        currentDate.toLocaleString().split(", ")[1]
+    );
     if (seconds2 > 0) {
       pomodoroPause.push(
         " paused for " +
