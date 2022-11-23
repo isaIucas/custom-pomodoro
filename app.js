@@ -85,9 +85,9 @@ function calculation2() {
     (seconds2 > 9 ? seconds2 : "0" + seconds2);
 }
 
-function recordNote(index) {
-  console.log("index: " + index);
-  var box = document.querySelector("#customDivTime" + index);
+function recordNote(dynamicStringIndex) {
+  console.log("dynamicStringIndex: " + dynamicStringIndex);
+  var box = document.getElementById(dynamicStringIndex);
   var textBox = document.createElement("input");
   var textBoxAtr = document.createAttribute("id");
   var textBoxAtr2 = document.createAttribute("type");
@@ -108,9 +108,15 @@ function displayResult() {
   for (i = 0; i < pomodoro.length; i++) {
     var box = document.createElement("div");
     var boxAtr = document.createAttribute("id");
-    boxAtr.value = "customDiv";
+    boxAtr.value = "custom1Div" + i;
     box.setAttributeNode(boxAtr);
     var parentBox = document.querySelector("#column1Content");
+
+    box.style.display = "flex";
+    box.style.border_left = "1px solid black";
+    box.style.border_right = "1px solid black";
+    box.style.border_bottom = "1px solid black";
+    box.style.height = "16px";
 
     var smallerBox = document.createElement("div");
     var smallerBoxAtr = document.createAttribute("id");
@@ -119,7 +125,7 @@ function displayResult() {
 
     var smallerBox2 = document.createElement("div");
     var smallerBox2Atr = document.createAttribute("id");
-    smallerBox2Atr.value = "customDivTime" + i;
+    smallerBox2Atr.value = "customDivTime";
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = pomodoroDate[i];
@@ -132,7 +138,7 @@ function displayResult() {
       var noteButton = document.createElement("button");
       var noteButtonAtr = document.createAttribute("id");
       var noteButtonAtr2 = document.createAttribute("onclick");
-      noteButtonAtr2.value = "recordNote(" + i + ")";
+      noteButtonAtr2.value = "recordNote('custom1Div" + i + "')";
       noteButton.setAttributeNode(noteButtonAtr2);
       noteButton.textContent = "+";
       noteButtonAtr.value = "noteButton";
@@ -143,9 +149,15 @@ function displayResult() {
   for (i = 0; i < shortBreak.length; i++) {
     var box = document.createElement("div");
     var boxAtr = document.createAttribute("id");
-    boxAtr.value = "customDiv";
+    boxAtr.value = "custom2Div" + i;
     box.setAttributeNode(boxAtr);
     var parentBox = document.querySelector("#column2Content");
+
+    box.style.display = "flex";
+    box.style.border_left = "1px solid black";
+    box.style.border_right = "1px solid black";
+    box.style.border_bottom = "1px solid black";
+    box.style.height = "16px";
 
     var smallerBox = document.createElement("div");
     var smallerBoxAtr = document.createAttribute("id");
@@ -154,20 +166,21 @@ function displayResult() {
 
     var smallerBox2 = document.createElement("div");
     var smallerBox2Atr = document.createAttribute("id");
-    smallerBox2Atr.value = "customDivTime" + i;
+    smallerBox2Atr.value = "customDivTime";
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = shortBreakDate[i];
     smallerBox2.textContent = shortBreak[i] + shortBreakPause[i];
 
     parentBox.appendChild(box);
+
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
     if (shortBreak[i] != "") {
       var noteButton = document.createElement("button");
       var noteButtonAtr = document.createAttribute("id");
       var noteButtonAtr2 = document.createAttribute("onclick");
-      noteButtonAtr2.value = "recordNote(" + i + ")";
+      noteButtonAtr2.value = "recordNote('custom2Div" + i + "')";
       noteButton.setAttributeNode(noteButtonAtr2);
       noteButton.textContent = "+";
       noteButtonAtr.value = "noteButton";
@@ -178,9 +191,15 @@ function displayResult() {
   for (i = 0; i < longBreak.length; i++) {
     var box = document.createElement("div");
     var boxAtr = document.createAttribute("id");
-    boxAtr.value = "customDiv";
+    boxAtr.value = "custom3Div" + i;
     box.setAttributeNode(boxAtr);
     var parentBox = document.querySelector("#column3Content");
+
+    box.style.display = "flex";
+    box.style.border_left = "1px solid black";
+    box.style.border_right = "1px solid black";
+    box.style.border_bottom = "1px solid black";
+    box.style.height = "16px";
 
     var smallerBox = document.createElement("div");
     var smallerBoxAtr = document.createAttribute("id");
@@ -189,7 +208,7 @@ function displayResult() {
 
     var smallerBox2 = document.createElement("div");
     var smallerBox2Atr = document.createAttribute("id");
-    smallerBox2Atr.value = "customDivTime" + i;
+    smallerBox2Atr.value = "customDivTime";
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = longBreakDate[i];
@@ -202,7 +221,7 @@ function displayResult() {
       var noteButton = document.createElement("button");
       var noteButtonAtr = document.createAttribute("id");
       var noteButtonAtr2 = document.createAttribute("onclick");
-      noteButtonAtr2.value = "recordNote(" + i + ")";
+      noteButtonAtr2.value = "recordNote('custom3Div" + i + "')";
       noteButton.setAttributeNode(noteButtonAtr2);
       noteButton.textContent = "+";
       noteButtonAtr.value = "noteButton";

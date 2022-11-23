@@ -14,7 +14,7 @@ div {
   flex-direction: column;
   flex-grow: 1;
 }
-
+/*
 #customDiv{
   display: flex;
   border-left: 1px solid black;
@@ -22,20 +22,17 @@ div {
   border-bottom: 1px solid black;
   height: 16px;
 }
-
-#customDivTime{
+*/
+#customDivTime {
   border-left: 1px solid black;
 }
 
-#column1Header,#column2Header,#column3Header
-{
+#column1Header,
+#column2Header,
+#column3Header {
   border-bottom: 1px solid black;
-
 }
 
-#testerino{}
-
-/*
 * {
   border: 1px solid red;
 }
