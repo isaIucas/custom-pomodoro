@@ -20,14 +20,14 @@ let shortBreak = [];
 let shortBreakPause = [];
 let longBreak = [];
 let longBreakPause = [];
-//new tracking: Time Stamp <= Tackling this one
+//new tracking: Time Stamp
 let oldDate;
 let CurrentDate;
 
 let pomodoroDate = [];
 let shortBreakDate = [];
 let longBreakDate = [];
-//new tracking: Notes
+//new tracking: Notes <= Tackling this one
 let pomodoroNotes = [];
 let shortBreakNotes = [];
 let longBreakNotes = [];
@@ -85,6 +85,18 @@ function calculation2() {
     (seconds2 > 9 ? seconds2 : "0" + seconds2);
 }
 
+function recordNote(index) {
+  console.log("index: " + index);
+  var box = document.querySelector("#customDivTime" + index);
+  var textBox = document.createElement("input");
+  var textBoxAtr = document.createAttribute("id");
+  var textBoxAtr2 = document.createAttribute("type");
+  textBoxAtr.value = "textBox";
+  textBoxAtr2.value = "text";
+  console.log(box);
+  box.appendChild(textBox);
+}
+
 function displayResult() {
   document.getElementById("column1Header").innerHTML = "Pomodoro:";
   document.getElementById("column2Header").innerHTML = "Short Break:";
@@ -94,7 +106,6 @@ function displayResult() {
   document.getElementById("column3Content").innerHTML = "";
 
   for (i = 0; i < pomodoro.length; i++) {
-    console.log(pomodoro[i]);
     var box = document.createElement("div");
     var boxAtr = document.createAttribute("id");
     boxAtr.value = "customDiv";
@@ -108,19 +119,28 @@ function displayResult() {
 
     var smallerBox2 = document.createElement("div");
     var smallerBox2Atr = document.createAttribute("id");
-    smallerBox2Atr.value = "customDivTime";
+    smallerBox2Atr.value = "customDivTime" + i;
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = pomodoroDate[i];
-    //String split to just get the time LOL <=
     smallerBox2.textContent = pomodoro[i] + pomodoroPause[i];
 
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
+    if (pomodoro[i] != "") {
+      var noteButton = document.createElement("button");
+      var noteButtonAtr = document.createAttribute("id");
+      var noteButtonAtr2 = document.createAttribute("onclick");
+      noteButtonAtr2.value = "recordNote(" + i + ")";
+      noteButton.setAttributeNode(noteButtonAtr2);
+      noteButton.textContent = "+";
+      noteButtonAtr.value = "noteButton";
+      noteButton.setAttributeNode(noteButtonAtr);
+      box.appendChild(noteButton);
+    }
   }
   for (i = 0; i < shortBreak.length; i++) {
-    console.log(shortBreak[i]);
     var box = document.createElement("div");
     var boxAtr = document.createAttribute("id");
     boxAtr.value = "customDiv";
@@ -134,7 +154,7 @@ function displayResult() {
 
     var smallerBox2 = document.createElement("div");
     var smallerBox2Atr = document.createAttribute("id");
-    smallerBox2Atr.value = "customDivTime";
+    smallerBox2Atr.value = "customDivTime" + i;
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = shortBreakDate[i];
@@ -143,9 +163,19 @@ function displayResult() {
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
+    if (shortBreak[i] != "") {
+      var noteButton = document.createElement("button");
+      var noteButtonAtr = document.createAttribute("id");
+      var noteButtonAtr2 = document.createAttribute("onclick");
+      noteButtonAtr2.value = "recordNote(" + i + ")";
+      noteButton.setAttributeNode(noteButtonAtr2);
+      noteButton.textContent = "+";
+      noteButtonAtr.value = "noteButton";
+      noteButton.setAttributeNode(noteButtonAtr);
+      box.appendChild(noteButton);
+    }
   }
   for (i = 0; i < longBreak.length; i++) {
-    console.log(longBreak[i]);
     var box = document.createElement("div");
     var boxAtr = document.createAttribute("id");
     boxAtr.value = "customDiv";
@@ -159,7 +189,7 @@ function displayResult() {
 
     var smallerBox2 = document.createElement("div");
     var smallerBox2Atr = document.createAttribute("id");
-    smallerBox2Atr.value = "customDivTime";
+    smallerBox2Atr.value = "customDivTime" + i;
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = longBreakDate[i];
@@ -168,6 +198,17 @@ function displayResult() {
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
+    if (longBreak[i] != "") {
+      var noteButton = document.createElement("button");
+      var noteButtonAtr = document.createAttribute("id");
+      var noteButtonAtr2 = document.createAttribute("onclick");
+      noteButtonAtr2.value = "recordNote(" + i + ")";
+      noteButton.setAttributeNode(noteButtonAtr2);
+      noteButton.textContent = "+";
+      noteButtonAtr.value = "noteButton";
+      noteButton.setAttributeNode(noteButtonAtr);
+      box.appendChild(noteButton);
+    }
   }
 }
 
@@ -193,10 +234,12 @@ function startPomodoro() {
     pomodoro.push("");
     pomodoroPause.push("");
     pomodoroDate.push("");
+    pomodoroNotes.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
+    longBreakNotes.push("");
 
     shortBreak.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -205,6 +248,7 @@ function startPomodoro() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
+    shortBreakNotes.push(""); //note
     oldDate = currentDate;
     currentDate = new Date();
     shortBreakDate.push(
@@ -231,10 +275,12 @@ function startPomodoro() {
     pomodoro.push("");
     pomodoroPause.push("");
     pomodoroDate.push("");
+    pomodoroNotes.push("");
 
     shortBreak.push("");
     shortBreakPause.push("");
     shortBreakDate.push("");
+    shortBreakNotes.push("");
 
     longBreak.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -243,6 +289,7 @@ function startPomodoro() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
+    longBreakNotes.push(""); //notes
     oldDate = currentDate;
     currentDate = new Date();
     longBreakDate.push(
@@ -329,10 +376,12 @@ function startBreak() {
     shortBreak.push("");
     shortBreakPause.push("");
     shortBreakDate.push("");
+    shortBreakNotes.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
+    longBreakNotes.push("");
 
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -341,6 +390,7 @@ function startBreak() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
+    pomodoroNotes.push(""); //notes
     hours = Math.floor(totalSeconds2 / 3600);
     oldDate = currentDate;
     currentDate = new Date();
@@ -444,10 +494,12 @@ function startLongBreak() {
     shortBreak.push("");
     shortBreakPause.push("");
     shortBreakDate.push("");
+    shortBreakNotes.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
+    longBreakNotes.push("");
 
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -456,6 +508,7 @@ function startLongBreak() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
+    pomodoroNotes.push(""); //notes
     hours = Math.floor(totalSeconds2 / 3600);
     oldDate = currentDate;
     currentDate = new Date();
