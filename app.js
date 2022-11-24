@@ -28,9 +28,7 @@ let pomodoroDate = [];
 let shortBreakDate = [];
 let longBreakDate = [];
 //new tracking: Notes <= Tackling this one
-let pomodoroNotes = [];
-let shortBreakNotes = [];
-let longBreakNotes = [];
+let storeNotes = new Map();
 //new tracking: additional data/following score
 let pomodoroScore = [];
 let shortBreakScore = [];
@@ -85,16 +83,134 @@ function calculation2() {
     (seconds2 > 9 ? seconds2 : "0" + seconds2);
 }
 
-function recordNote(dynamicStringIndex) {
-  console.log("dynamicStringIndex: " + dynamicStringIndex);
-  var box = document.getElementById(dynamicStringIndex);
+//custom1||2||3div[index] position of table
+function recordNote(
+  ColumnIndex,
+  dynamicDivStringIndex,
+  dynamicNoteStringIndex,
+  RowIndex
+) {
+  textBoxColumnRow = "text" + ColumnIndex + "Box" + RowIndex;
+  clickNoteButton(
+    dynamicDivStringIndex,
+    dynamicNoteStringIndex,
+    textBoxColumnRow,
+    ColumnIndex,
+    RowIndex
+  );
+
+  var box = document.getElementById(dynamicDivStringIndex);
   var textBox = document.createElement("input");
   var textBoxAtr = document.createAttribute("id");
   var textBoxAtr2 = document.createAttribute("type");
-  textBoxAtr.value = "textBox";
+  var textBoxAtr3 = document.createAttribute("value");
+
+  var noteButton = document.getElementById(dynamicNoteStringIndex);
+  textBoxAtr.value = textBoxColumnRow;
   textBoxAtr2.value = "text";
-  console.log(box);
-  box.appendChild(textBox);
+  if (storeNotes.get("note" + ColumnIndex + "Button" + RowIndex) == undefined) {
+    textBox.placeholder = "Make your excuse";
+  } else {
+    textBoxAtr3.value = storeNotes.get(
+      "note" + ColumnIndex + "Button" + RowIndex
+    );
+  }
+
+  textBox.setAttributeNode(textBoxAtr);
+  textBox.setAttributeNode(textBoxAtr2);
+  textBox.setAttributeNode(textBoxAtr3);
+
+  box.insertBefore(textBox, noteButton);
+}
+
+function clickNoteButton(
+  dynamicDivStringIndex,
+  dynamicNoteStringIndex,
+  textBoxColumnRow,
+  ColumnIndex,
+  RowIndex
+) {
+  var box = document.getElementById(dynamicDivStringIndex);
+  box.removeChild(box.lastChild);
+  var noteButton = document.createElement("button");
+  var noteButtonID = document.createAttribute("id");
+  var noteButtonOnClick = document.createAttribute("onclick");
+  noteButtonID.value = dynamicNoteStringIndex;
+  noteButtonOnClick.value =
+    "clickDoneButton(" +
+    dynamicDivStringIndex +
+    "," +
+    dynamicNoteStringIndex +
+    "," +
+    textBoxColumnRow +
+    "," +
+    ColumnIndex +
+    "," +
+    RowIndex +
+    ")";
+  noteButton.setAttributeNode(noteButtonID);
+  noteButton.setAttributeNode(noteButtonOnClick);
+
+  noteButton.textContent = "done";
+  box.appendChild(noteButton);
+}
+
+function clickDoneButton(
+  dynamicDivStringIndex,
+  dynamicNoteStringIndex,
+  textBoxColumnRow,
+  ColumnIndex,
+  RowIndex
+) {
+  textBox = textBoxColumnRow.value;
+  storeNotes.set(dynamicNoteStringIndex.id, textBox);
+
+  console.log(storeNotes);
+  console.log(storeNotes.get(dynamicNoteStringIndex.id));
+
+  var box = dynamicDivStringIndex;
+
+  box.removeChild(box.lastChild);
+  box.removeChild(box.lastChild);
+  var textRecord = document.getElementById(
+    "customDiv" + ColumnIndex + "Notes" + RowIndex
+  );
+  textRecord.textContent = storeNotes.get(dynamicNoteStringIndex.id); //need hash data instead key pairs
+  box.appendChild(textRecord);
+  /*
+  var noteButton = document.createElement("button");
+  var noteButtonID = document.createAttribute("id");
+  noteButtonID.value = dynamicNoteStringIndex;
+  noteButton.setAttributeNode(noteButtonID);
+  noteButton.textContent = "edit";
+  box.appendChild(noteButton);
+  */
+  var noteButton = document.createElement("button");
+  var noteButtonAtr = document.createAttribute("id");
+  var noteButtonAtr2 = document.createAttribute("onclick");
+  noteButtonAtr2.value =
+    "recordNote(" +
+    ColumnIndex +
+    ",'custom" +
+    ColumnIndex +
+    "Div" +
+    RowIndex +
+    "', 'note" +
+    ColumnIndex +
+    "Button" +
+    RowIndex +
+    "'," +
+    RowIndex +
+    ")";
+  noteButton.setAttributeNode(noteButtonAtr2);
+  if (storeNotes.has("note" + ColumnIndex + "Button" + RowIndex)) {
+    noteButton.textContent = "edit";
+  } else {
+    noteButton.textContent = "+";
+  }
+  noteButtonAtr.value = "note" + ColumnIndex + "Button" + RowIndex;
+  noteButton.setAttributeNode(noteButtonAtr);
+  box.appendChild(noteButton);
 }
 
 function displayResult() {
@@ -135,13 +251,25 @@ function displayResult() {
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
     if (pomodoro[i] != "") {
+      var smallerBox3 = document.createElement("div");
+      var smallerBox3Atr = document.createAttribute("id");
+      smallerBox3Atr.value = "customDiv1Notes" + i;
+      smallerBox3.textContent = storeNotes.get("note1Button" + i);
+      smallerBox3.setAttributeNode(smallerBox3Atr);
+      box.appendChild(smallerBox3);
+
       var noteButton = document.createElement("button");
       var noteButtonAtr = document.createAttribute("id");
       var noteButtonAtr2 = document.createAttribute("onclick");
-      noteButtonAtr2.value = "recordNote('custom1Div" + i + "')";
+      noteButtonAtr2.value =
+        "recordNote(1,'custom1Div" + i + "', 'note1Button" + i + "'," + i + ")";
       noteButton.setAttributeNode(noteButtonAtr2);
-      noteButton.textContent = "+";
-      noteButtonAtr.value = "noteButton";
+      if (storeNotes.has("note1Button" + i)) {
+        noteButton.textContent = "edit";
+      } else {
+        noteButton.textContent = "+";
+      }
+      noteButtonAtr.value = "note1Button" + i;
       noteButton.setAttributeNode(noteButtonAtr);
       box.appendChild(noteButton);
     }
@@ -177,13 +305,25 @@ function displayResult() {
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
     if (shortBreak[i] != "") {
+      var smallerBox3 = document.createElement("div");
+      var smallerBox3Atr = document.createAttribute("id");
+      smallerBox3Atr.value = "customDiv2Notes" + i;
+      smallerBox3.textContent = storeNotes.get("note2Button" + i);
+      smallerBox3.setAttributeNode(smallerBox3Atr);
+      box.appendChild(smallerBox3);
+
       var noteButton = document.createElement("button");
       var noteButtonAtr = document.createAttribute("id");
       var noteButtonAtr2 = document.createAttribute("onclick");
-      noteButtonAtr2.value = "recordNote('custom2Div" + i + "')";
+      noteButtonAtr2.value =
+        "recordNote(2,'custom2Div" + i + "', 'note2Button" + i + "'," + i + ")";
       noteButton.setAttributeNode(noteButtonAtr2);
-      noteButton.textContent = "+";
-      noteButtonAtr.value = "noteButton";
+      if (storeNotes.has("note2Button" + i)) {
+        noteButton.textContent = "edit";
+      } else {
+        noteButton.textContent = "+";
+      }
+      noteButtonAtr.value = "note2Button" + i;
       noteButton.setAttributeNode(noteButtonAtr);
       box.appendChild(noteButton);
     }
@@ -218,13 +358,25 @@ function displayResult() {
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
     if (longBreak[i] != "") {
+      var smallerBox3 = document.createElement("div");
+      var smallerBox3Atr = document.createAttribute("id");
+      smallerBox3Atr.value = "customDiv3Notes" + i;
+      smallerBox3.textContent = storeNotes.get("note3Button" + i);
+      smallerBox3.setAttributeNode(smallerBox3Atr);
+      box.appendChild(smallerBox3);
+
       var noteButton = document.createElement("button");
       var noteButtonAtr = document.createAttribute("id");
       var noteButtonAtr2 = document.createAttribute("onclick");
-      noteButtonAtr2.value = "recordNote('custom3Div" + i + "')";
+      noteButtonAtr2.value =
+        "recordNote(3,'custom3Div" + i + "', 'note3Button" + i + "'," + i + ")";
       noteButton.setAttributeNode(noteButtonAtr2);
-      noteButton.textContent = "+";
-      noteButtonAtr.value = "noteButton";
+      if (storeNotes.has("note3Button" + i)) {
+        noteButton.textContent = "edit";
+      } else {
+        noteButton.textContent = "+";
+      }
+      noteButtonAtr.value = "note3Button" + i;
       noteButton.setAttributeNode(noteButtonAtr);
       box.appendChild(noteButton);
     }
@@ -253,12 +405,12 @@ function startPomodoro() {
     pomodoro.push("");
     pomodoroPause.push("");
     pomodoroDate.push("");
-    pomodoroNotes.push("");
+    //storeNotes.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
-    longBreakNotes.push("");
+    //longBreakNotes.push("");
 
     shortBreak.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -267,7 +419,7 @@ function startPomodoro() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
-    shortBreakNotes.push(""); //note
+    //shortBreakNotes.push(""); //note
     oldDate = currentDate;
     currentDate = new Date();
     shortBreakDate.push(
@@ -294,12 +446,12 @@ function startPomodoro() {
     pomodoro.push("");
     pomodoroPause.push("");
     pomodoroDate.push("");
-    pomodoroNotes.push("");
+    //storeNotes.push("");
 
     shortBreak.push("");
     shortBreakPause.push("");
     shortBreakDate.push("");
-    shortBreakNotes.push("");
+    //shortBreakNotes.push("");
 
     longBreak.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -308,7 +460,7 @@ function startPomodoro() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
-    longBreakNotes.push(""); //notes
+    //longBreakNotes.push(""); //notes
     oldDate = currentDate;
     currentDate = new Date();
     longBreakDate.push(
@@ -395,12 +547,12 @@ function startBreak() {
     shortBreak.push("");
     shortBreakPause.push("");
     shortBreakDate.push("");
-    shortBreakNotes.push("");
+    //shortBreakNotes.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
-    longBreakNotes.push("");
+    //longBreakNotes.push("");
 
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -409,7 +561,7 @@ function startBreak() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
-    pomodoroNotes.push(""); //notes
+    //storeNotes.push(""); //notes
     hours = Math.floor(totalSeconds2 / 3600);
     oldDate = currentDate;
     currentDate = new Date();
@@ -513,12 +665,12 @@ function startLongBreak() {
     shortBreak.push("");
     shortBreakPause.push("");
     shortBreakDate.push("");
-    shortBreakNotes.push("");
+    //shortBreakNotes.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
-    longBreakNotes.push("");
+    //longBreakNotes.push("");
 
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -527,7 +679,7 @@ function startLongBreak() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
-    pomodoroNotes.push(""); //notes
+    //storeNotes.push(""); //notes
     hours = Math.floor(totalSeconds2 / 3600);
     oldDate = currentDate;
     currentDate = new Date();
