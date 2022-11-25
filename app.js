@@ -20,6 +20,20 @@ let shortBreak = [];
 let shortBreakPause = [];
 let longBreak = [];
 let longBreakPause = [];
+
+//store data points of desire pomodoro, break, and long break
+let desirePomodoro = [];
+let desireShortBreak = [];
+let desireLongBreak = [];
+
+//Format for visual outputs
+let desirePomodoroFormat = [];
+let desireShortBreakFormat = [];
+let desireLongBreakFormat = [];
+
+let desireShortBreakPercentFormat = [];
+let desireLongBreakPercentFormat = [];
+
 //new tracking: Time Stamp
 let oldDate;
 let CurrentDate;
@@ -27,12 +41,20 @@ let CurrentDate;
 let pomodoroDate = [];
 let shortBreakDate = [];
 let longBreakDate = [];
-//new tracking: Notes <= Tackling this one
+
+let pomodoroDateDifference = [];
+let shortBreakDateDifference = [];
+let longBreakDateDifference = [];
+//new tracking: Notes
 let storeNotes = new Map();
+
+let storeEfficiency = new Map();
 //new tracking: additional data/following score
+/*
 let pomodoroScore = [];
 let shortBreakScore = [];
 let longBreakScore = [];
+*/
 
 //total accumulation of seconds for displaying results
 let totalSecondsPomodoro = 0;
@@ -165,9 +187,6 @@ function clickDoneButton(
   textBox = textBoxColumnRow.value;
   storeNotes.set(dynamicNoteStringIndex.id, textBox);
 
-  console.log(storeNotes);
-  console.log(storeNotes.get(dynamicNoteStringIndex.id));
-
   var box = dynamicDivStringIndex;
 
   box.removeChild(box.lastChild);
@@ -175,16 +194,8 @@ function clickDoneButton(
   var textRecord = document.getElementById(
     "customDiv" + ColumnIndex + "Notes" + RowIndex
   );
-  textRecord.textContent = storeNotes.get(dynamicNoteStringIndex.id); //need hash data instead key pairs
+  textRecord.textContent = storeNotes.get(dynamicNoteStringIndex.id);
   box.appendChild(textRecord);
-  /*
-  var noteButton = document.createElement("button");
-  var noteButtonID = document.createAttribute("id");
-  noteButtonID.value = dynamicNoteStringIndex;
-  noteButton.setAttributeNode(noteButtonID);
-  noteButton.textContent = "edit";
-  box.appendChild(noteButton);
-  */
   var noteButton = document.createElement("button");
   var noteButtonAtr = document.createAttribute("id");
   var noteButtonAtr2 = document.createAttribute("onclick");
@@ -213,6 +224,7 @@ function clickDoneButton(
   box.appendChild(noteButton);
 }
 
+//This is important for retaining data for displaying
 function displayResult() {
   document.getElementById("column1Header").innerHTML = "Pomodoro:";
   document.getElementById("column2Header").innerHTML = "Short Break:";
@@ -250,13 +262,51 @@ function displayResult() {
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
+
     if (pomodoro[i] != "") {
+      document.getElementById("pomodoro-time").value + ":00";
+      /*
+      console.log(" ");
+      console.log("ALL Pomodoro Reality: " + pomodoroDateDifference);
+      console.log("Pomodoro Reality: " + pomodoroDateDifference[i]);
+      console.log(
+        "Pomodoro Wish: " +
+          Number(document.getElementById("pomodoro-time").value) * 60
+      );
+      */
+      if (
+        //1 >= 1500
+        pomodoroDateDifference[i] >=
+        Number(document.getElementById("pomodoro-time").value) * 60
+      ) {
+        document.getElementById("custom1Div" + i).style.backgroundColor =
+          "LightGreen";
+      } else {
+        document.getElementById("custom1Div" + i).style.backgroundColor =
+          "LightPink";
+      }
+      //
       var smallerBox3 = document.createElement("div");
       var smallerBox3Atr = document.createAttribute("id");
       smallerBox3Atr.value = "customDiv1Notes" + i;
       smallerBox3.textContent = storeNotes.get("note1Button" + i);
       smallerBox3.setAttributeNode(smallerBox3Atr);
       box.appendChild(smallerBox3);
+
+      var smallerBox4 = document.createElement("div");
+      var smallerBox4Atr = document.createAttribute("id");
+      var scoreEfficiency = (
+        (pomodoroDateDifference[i] / (Number(desirePomodoro[i]) * 60)) *
+        100
+      ).toFixed(0);
+      storeEfficiency.set("custom1DesireTime", [
+        " Desire: " + desirePomodoroFormat[i],
+        " Efficiency: " + scoreEfficiency + " %",
+      ]);
+      smallerBox4Atr.value = "custom1DesireTime";
+      smallerBox4.textContent = storeEfficiency.get("custom1DesireTime");
+      smallerBox4.setAttributeNode(smallerBox4Atr);
+      box.appendChild(smallerBox4);
 
       var noteButton = document.createElement("button");
       var noteButtonAtr = document.createAttribute("id");
@@ -305,12 +355,42 @@ function displayResult() {
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
     if (shortBreak[i] != "") {
+      if (
+        shortBreakDateDifference[i] <=
+        pomodoroDateDifference[i - 1] *
+          (Number("0." + document.getElementById("break-time").value) + 0.05) //0.05 or 5% is for time to click to still get LightGreen
+      ) {
+        document.getElementById("custom2Div" + i).style.backgroundColor =
+          "LightGreen";
+      } else {
+        document.getElementById("custom2Div" + i).style.backgroundColor =
+          "LightPink";
+      }
       var smallerBox3 = document.createElement("div");
       var smallerBox3Atr = document.createAttribute("id");
       smallerBox3Atr.value = "customDiv2Notes" + i;
       smallerBox3.textContent = storeNotes.get("note2Button" + i);
       smallerBox3.setAttributeNode(smallerBox3Atr);
       box.appendChild(smallerBox3);
+      // don't need console.log("desireShortBreak: " + desireShortBreak);
+
+      var smallerBox4 = document.createElement("div");
+      var smallerBox4Atr = document.createAttribute("id");
+
+      var scoreEfficiency = (
+        (formatToSeconds(desireShortBreakFormat[i]) /
+          shortBreakDateDifference[i]) * // need to make a function to convert string to seconds
+        100
+      ).toFixed(0);
+      storeEfficiency.set("custom2DesireTime", [
+        " Desire: " + desireShortBreakFormat[i],
+        desireShortBreakPercentFormat[i],
+        " Efficiency: " + scoreEfficiency + " %",
+      ]);
+      smallerBox4Atr.value = "custom2DesireTime";
+      smallerBox4.textContent = storeEfficiency.get("custom2DesireTime");
+      smallerBox4.setAttributeNode(smallerBox4Atr);
+      box.appendChild(smallerBox4);
 
       var noteButton = document.createElement("button");
       var noteButtonAtr = document.createAttribute("id");
@@ -358,12 +438,42 @@ function displayResult() {
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
     if (longBreak[i] != "") {
+      if (
+        longBreakDateDifference[i] <=
+        pomodoroDateDifference[i - 1] *
+          (Number("0." + document.getElementById("long-break-time").value) +
+            0.05) //0.05 or 5% is for time to click to still get LightGreen
+      ) {
+        document.getElementById("custom3Div" + i).style.backgroundColor =
+          "LightGreen";
+      } else {
+        document.getElementById("custom3Div" + i).style.backgroundColor =
+          "LightPink";
+      }
       var smallerBox3 = document.createElement("div");
       var smallerBox3Atr = document.createAttribute("id");
       smallerBox3Atr.value = "customDiv3Notes" + i;
       smallerBox3.textContent = storeNotes.get("note3Button" + i);
       smallerBox3.setAttributeNode(smallerBox3Atr);
       box.appendChild(smallerBox3);
+
+      var smallerBox4 = document.createElement("div");
+      var smallerBox4Atr = document.createAttribute("id");
+
+      var scoreEfficiency = (
+        (formatToSeconds(desireLongBreakFormat[i]) /
+          longBreakDateDifference[i]) *
+        100
+      ).toFixed(0);
+      storeEfficiency.set("custom3DesireTime", [
+        " Desire: " + desireLongBreakFormat[i],
+        desireLongBreakPercentFormat[i],
+        " Efficiency: " + scoreEfficiency + " %",
+      ]);
+      smallerBox4Atr.value = "custom3DesireTime";
+      smallerBox4.textContent = storeEfficiency.get("custom3DesireTime");
+      smallerBox4.setAttributeNode(smallerBox4Atr);
+      box.appendChild(smallerBox4);
 
       var noteButton = document.createElement("button");
       var noteButtonAtr = document.createAttribute("id");
@@ -383,6 +493,17 @@ function displayResult() {
   }
 }
 
+function formatToSeconds(format) {
+  console.log("format: " + format);
+  var array = format.split(":");
+  seconds =
+    Number(array[0]) * 3600 + Number(array[1]) * 60 + Number(array[2]) * 1;
+
+  console.log("seconds: " + seconds);
+
+  return seconds;
+}
+
 let firstButtonOfTheDay = false;
 
 function startPomodoro() {
@@ -395,8 +516,27 @@ function startPomodoro() {
   alarmSound = new Audio("Kiznaiver.mp3");
   alarmTime = document.getElementById("pomodoro-time").value * 60;
 
+  let totalAlarmSeconds = alarmTime;
+  alarmSeconds = totalAlarmSeconds % 60;
+  alarmMinutes = Math.floor(totalAlarmSeconds / 60);
+  alarmHours = Math.floor(totalAlarmSeconds / 3600);
+  var current = document.querySelector("#current");
+  var timeFormat =
+    (alarmHours > 9 ? alarmHours : "0" + alarmHours) +
+    ":" +
+    (alarmMinutes > 9 ? alarmMinutes : "0" + alarmMinutes) +
+    ":" +
+    (alarmSeconds > 9 ? alarmSeconds : "0" + alarmSeconds);
+
   hours = Math.floor(totalSeconds / 3600);
   hours2 = Math.floor(totalSeconds2 / 3600);
+
+  desirePomodoroFormat.push(timeFormat);
+  desireShortBreakFormat.push("");
+  desireLongBreakFormat.push("");
+
+  desireShortBreakPercentFormat.push("");
+  desireLongBreakPercentFormat.push("");
 
   if (buttonPressed == "break") {
     totalSecondsBreak += totalSeconds;
@@ -405,12 +545,14 @@ function startPomodoro() {
     pomodoro.push("");
     pomodoroPause.push("");
     pomodoroDate.push("");
-    //storeNotes.push("");
+    pomodoroDateDifference.push("");
+    desirePomodoro.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
-    //longBreakNotes.push("");
+    longBreakDateDifference.push("");
+    desireLongBreak.push("");
 
     shortBreak.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -419,14 +561,23 @@ function startPomodoro() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
-    //shortBreakNotes.push(""); //note
+
     oldDate = currentDate;
     currentDate = new Date();
+    secondsDifference = Math.floor(
+      (currentDate.getTime() - oldDate.getTime()) / 1000
+    );
+    shortBreakDateDifference.push(secondsDifference);
     shortBreakDate.push(
       oldDate.toLocaleString().split(", ")[1] +
         "~" +
         currentDate.toLocaleString().split(", ")[1]
     );
+    desireShortBreak.push(
+      secondsDifference *
+        Number("0." + document.getElementById("break-time").value)
+    );
+
     if (seconds2 > 0) {
       shortBreakPause.push(
         " paused for " +
@@ -446,12 +597,17 @@ function startPomodoro() {
     pomodoro.push("");
     pomodoroPause.push("");
     pomodoroDate.push("");
-    //storeNotes.push("");
+    pomodoroDateDifference.push("");
+    desirePomodoro.push("");
+    //desirePomodoroFormat.push("");
 
     shortBreak.push("");
     shortBreakPause.push("");
     shortBreakDate.push("");
-    //shortBreakNotes.push("");
+    shortBreakDateDifference.push("");
+    desireShortBreak.push("");
+    //desireShortBreakFormat.push("");
+    //desireShortBreakPercentFormat.push("");
 
     longBreak.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -460,9 +616,19 @@ function startPomodoro() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
-    //longBreakNotes.push(""); //notes
+    //desire push
+    /*
+    desireLongBreakPercentFormat.push(
+      document.getElementById("long-break-time").value
+    );
+    */
+    desireLongBreak.push(document.getElementById("pomodoro-time").value);
     oldDate = currentDate;
     currentDate = new Date();
+    longBreakDateDifference.push(
+      Math.floor((currentDate.getTime() - oldDate.getTime()) / 1000)
+    );
+
     longBreakDate.push(
       oldDate.toLocaleString().split(", ")[1] +
         "~" +
@@ -481,23 +647,18 @@ function startPomodoro() {
       longBreakPause.push("");
     }
   }
+
+  /*
+  console.log(" ");
+  console.log("desireShortBreakFormat: " + desireShortBreakFormat);
+  console.log("desireLongBreakFormat: " + desireLongBreakFormat);
+  */
   displayResult();
 
   reset();
   buttonPressed = "pomodoro";
-  let totalAlarmSeconds = alarmTime;
-  alarmSeconds = totalAlarmSeconds % 60;
-  alarmMinutes = Math.floor(totalAlarmSeconds / 60);
-  alarmHours = Math.floor(totalAlarmSeconds / 3600);
-  var current = document.querySelector("#current");
-  current.textContent =
-    "Pomodoro [" +
-    (alarmHours > 9 ? alarmHours : "0" + alarmHours) +
-    ":" +
-    (alarmMinutes > 9 ? alarmMinutes : "0" + alarmMinutes) +
-    ":" +
-    (alarmSeconds > 9 ? alarmSeconds : "0" + alarmSeconds) +
-    "] Pomodoro";
+
+  current.textContent = "Pomodoro [" + timeFormat + "] Pomodoro";
   clearInterval(myInterval);
   totalAlarmSeconds = alarmTime * 60;
   var paragraph = document.querySelector("#demo");
@@ -538,6 +699,39 @@ function startBreak() {
   totalSecondsPomodoro += totalSeconds;
   totalSeconds2PomodoroPause += totalSeconds2;
 
+  alarmTime =
+    Number(totalSeconds) *
+    Number("0." + document.getElementById("break-time").value);
+  let totalAlarmSeconds = alarmTime;
+  alarmSeconds = totalAlarmSeconds % 60;
+  alarmMinutes = Math.floor(totalAlarmSeconds / 60);
+  alarmHours = Math.floor(totalAlarmSeconds / 3600);
+  var current = document.querySelector("#current");
+  var timeFormat =
+    (alarmHours > 9 ? alarmHours : "0" + alarmHours) +
+    ":" +
+    (alarmMinutes > 9 ? alarmMinutes : "0" + alarmMinutes) +
+    ":" +
+    (alarmSeconds > 9
+      ? alarmSeconds.toFixed(0)
+      : "0" + alarmSeconds.toFixed(0));
+
+  desirePomodoroFormat.push("");
+  desireShortBreakFormat.push(timeFormat);
+  desireLongBreakFormat.push("");
+
+  desireShortBreakPercentFormat.push(
+    document.getElementById("break-time").value + "%"
+  );
+  desireLongBreakPercentFormat.push("");
+  /*
+  console.log(" ");
+  console.log("startBreak");
+  console.log("desirePomodoroFormat: " + desirePomodoroFormat);
+  console.log("desireShortBreakFormat: " + desireShortBreakFormat);
+  console.log("desireLongBreakFormat: " + desireLongBreakFormat);
+  */
+
   if (firstButtonOfTheDay == false) {
     currentDate = new Date();
     firstButtonOfTheDay = true;
@@ -547,12 +741,18 @@ function startBreak() {
     shortBreak.push("");
     shortBreakPause.push("");
     shortBreakDate.push("");
-    //shortBreakNotes.push("");
+    shortBreakDateDifference.push("");
+    desireShortBreak.push("");
+    //desireShortBreakFormat.push("");
+    //desireShortBreakPercentFormat.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
-    //longBreakNotes.push("");
+    longBreakDateDifference.push("");
+    desireLongBreak.push("");
+    //desireLongBreakFormat.push("");
+    //desireLongBreakPercentFormat.push("");
 
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -561,10 +761,15 @@ function startBreak() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
-    //storeNotes.push(""); //notes
+
+    desirePomodoro.push(document.getElementById("pomodoro-time").value);
+
     hours = Math.floor(totalSeconds2 / 3600);
     oldDate = currentDate;
     currentDate = new Date();
+    pomodoroDateDifference.push(
+      Math.floor((currentDate.getTime() - oldDate.getTime()) / 1000)
+    );
     pomodoroDate.push(
       oldDate.toLocaleString().split(", ")[1] +
         "~" +
@@ -583,33 +788,17 @@ function startBreak() {
       pomodoroPause.push("");
     }
   }
-  displayResult();
-
-  buttonPressed = "break";
 
   pauseSound = new Audio("Chobits Opening.mp3");
   alarmSound.pause();
   alarmSound = new Audio("Cowboy Bebop.mp3");
-  alarmTime =
-    Number(totalSeconds) *
-    Number("0." + document.getElementById("break-time").value);
+
+  displayResult();
   reset();
 
-  let totalAlarmSeconds = alarmTime;
-  alarmSeconds = totalAlarmSeconds % 60;
-  alarmMinutes = Math.floor(totalAlarmSeconds / 60);
-  alarmHours = Math.floor(totalAlarmSeconds / 3600);
-  var current = document.querySelector("#current");
-  current.textContent =
-    "Break [" +
-    (alarmHours > 9 ? alarmHours : "0" + alarmHours) +
-    ":" +
-    (alarmMinutes > 9 ? alarmMinutes : "0" + alarmMinutes) +
-    ":" +
-    (alarmSeconds > 9
-      ? alarmSeconds.toFixed(0)
-      : "0" + alarmSeconds.toFixed(0)) +
-    "] Break";
+  buttonPressed = "break";
+
+  current.textContent = "Break [" + timeFormat + "] Break";
   clearInterval(myInterval);
   var paragraph = document.querySelector("#demo");
   paragraph.textContent = "00:00:00";
@@ -653,6 +842,42 @@ function startLongBreak() {
   hours = Math.floor(totalSeconds / 3600);
   hours2 = Math.floor(totalSeconds2 / 3600);
 
+  alarmTime =
+    Number(totalSeconds) *
+    Number("0." + document.getElementById("long-break-time").value);
+  let totalAlarmSeconds = alarmTime;
+  alarmSeconds = totalAlarmSeconds % 60;
+  alarmMinutes = Math.floor(totalAlarmSeconds / 60);
+  alarmHours = Math.floor(totalAlarmSeconds / 3600);
+  var current = document.querySelector("#current");
+  var timeFormat =
+    (alarmHours > 9 ? alarmHours : "0" + alarmHours) +
+    ":" +
+    (alarmMinutes > 9 ? alarmMinutes : "0" + alarmMinutes) +
+    ":" +
+    (alarmSeconds > 9
+      ? alarmSeconds.toFixed(0)
+      : "0" + alarmSeconds.toFixed(0));
+  desirePomodoroFormat.push("");
+  desireShortBreakFormat.push("");
+  desireLongBreakFormat.push(timeFormat);
+
+  desireShortBreakPercentFormat.push("");
+  desireLongBreakPercentFormat.push(
+    document.getElementById("long-break-time").value + "%"
+  );
+  /*
+  if (buttonPressed == "pomodoro") {
+    desirePomodoroFormat.push(timeFormat);
+  }
+
+  console.log(" ");
+  console.log("startLongBreak");
+  console.log("desirePomodoroFormat: " + desirePomodoroFormat);
+  console.log("desireShortBreakFormat: " + desireShortBreakFormat);
+  console.log("desireLongBreakFormat: " + desireLongBreakFormat);
+*/
+
   totalSecondsPomodoro += totalSeconds;
   totalSeconds2PomodoroPause += totalSeconds2;
 
@@ -665,12 +890,18 @@ function startLongBreak() {
     shortBreak.push("");
     shortBreakPause.push("");
     shortBreakDate.push("");
-    //shortBreakNotes.push("");
+    shortBreakDateDifference.push("");
+    desireShortBreak.push("");
+    //desireShortBreakFormat.push("");
+    //desireShortBreakPercentFormat.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
-    //longBreakNotes.push("");
+    longBreakDateDifference.push("");
+    desireLongBreak.push("");
+    //desireLongBreakFormat.push("");
+    //desireLongBreakPercentFormat.push("");
 
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -679,10 +910,15 @@ function startLongBreak() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
-    //storeNotes.push(""); //notes
+    //desire push
+
+    desirePomodoro.push(document.getElementById("pomodoro-time").value);
     hours = Math.floor(totalSeconds2 / 3600);
     oldDate = currentDate;
     currentDate = new Date();
+    pomodoroDateDifference.push(
+      Math.floor((currentDate.getTime() - oldDate.getTime()) / 1000)
+    );
     pomodoroDate.push(
       oldDate.toLocaleString().split(", ")[1] +
         "~" +
@@ -701,31 +937,17 @@ function startLongBreak() {
       pomodoroPause.push("");
     }
   }
-  displayResult();
   pauseSound = new Audio("Chobits Opening.mp3");
   alarmSound.pause();
   alarmSound = new Audio("Hype.mp3");
-  alarmTime =
-    Number(totalSeconds) *
-    Number("0." + document.getElementById("long-break-time").value);
+
+  displayResult();
 
   reset();
+
   buttonPressed = "long break";
-  let totalAlarmSeconds = alarmTime;
-  alarmSeconds = totalAlarmSeconds % 60;
-  alarmMinutes = Math.floor(totalAlarmSeconds / 60);
-  alarmHours = Math.floor(totalAlarmSeconds / 3600);
-  var current = document.querySelector("#current");
-  current.textContent =
-    "Long Break [" +
-    (alarmHours > 9 ? alarmHours : "0" + alarmHours) +
-    ":" +
-    (alarmMinutes > 9 ? alarmMinutes : "0" + alarmMinutes) +
-    ":" +
-    (alarmSeconds > 9
-      ? alarmSeconds.toFixed(0)
-      : "0" + alarmSeconds.toFixed(0)) +
-    "] Long Break";
+
+  current.textContent = "Long Break [" + timeFormat + "] Long Break";
 
   clearInterval(myInterval);
   var paragraph = document.querySelector("#demo");
