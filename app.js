@@ -26,7 +26,7 @@ let desirePomodoro = [];
 let desireShortBreak = [];
 let desireLongBreak = [];
 
-//Format for visual outputs
+//Format for visual outputs for
 let desirePomodoroFormat = [];
 let desireShortBreakFormat = [];
 let desireLongBreakFormat = [];
@@ -48,13 +48,8 @@ let longBreakDateDifference = [];
 //new tracking: Notes
 let storeNotes = new Map();
 
-let storeEfficiency = new Map();
 //new tracking: additional data/following score
-/*
-let pomodoroScore = [];
-let shortBreakScore = [];
-let longBreakScore = [];
-*/
+let storeEfficiency = new Map();
 
 //total accumulation of seconds for displaying results
 let totalSecondsPomodoro = 0;
@@ -64,10 +59,66 @@ let totalSeconds2BreakPause = 0;
 let totalSecondsLongBreak = 0;
 let totalSeconds2LongBreakPause = 0;
 
-let alarmSound = new Audio("Kiznaiver.mp3");
+//alarm sounds
+let pomodoroCollections = [
+  new Audio("./pomodoro/Kiznaiver.mp3"),
+  new Audio("./pomodoro/SDR2 OST - -1-05- Beautiful Ruin [Summer Salt].mp3"),
+  new Audio(
+    "./pomodoro/Shin Megami Tensei IV OST - Ikebukuro Underground District.mp3"
+  ),
+  new Audio("./pomodoro/Tricolor Airline.mp3"),
+];
+let breakCollections = [
+  new Audio("./break/Cowboy Bebop.mp3"),
+  new Audio("./break/Hunter X Hunter - Opening 1 _ Departure!.mp3"),
+  new Audio("./break/Naruto Shippuuden OP 1 Hero's Comeback.mp3"),
+  new Audio("./break/One Piece Opening 1 - FUNimation dub - We Are!.mp3"),
+  new Audio("./break/Person 3 opening edited.mp3"),
+];
+let pauseCollections = [
+  new Audio("./pause/Chobits Opening.mp3"),
+  new Audio("./pause/Elevator Music 1.mp3"),
+  new Audio("./pause/Elevator Music 2.mp3"),
+  new Audio("./pause/Kira's Theme (Elevator Music).mp3"),
+  new Audio("./pause/Persona 3 OST.mp3"),
+  new Audio("./pause/Yum Cha.mp3"),
+];
+let easterEgg = [new Audio("./easter egg/Among Us Drip Theme Song.mp3")];
+let finishedCollections = [
+  new Audio("./finished/Dragon Ball Ending Theme.mp3"),
+  new Audio("./finished/Ending _ Yume de Sekai wo Kaeru nara.mp3"),
+  new Audio("./finished/Ending 2 Nisekoi.mp3"),
+  new Audio(
+    "./finished/Fushigi no Dungeon - Torneko no Daibouken Eternal Happiness.mp3"
+  ),
+  new Audio("./finished/Hunter X Hunter - Ending 6.mp3"),
+  new Audio("./finished/One Piece ED 08 - Shining ray.mp3"),
+];
+let longBreakCollections = [
+  new Audio("./long break/Dragon Quest III Adventure.mp3"),
+  new Audio("./long break/Hype.mp3"),
+  new Audio("./long break/JoJo's Bizarre Adventure Opening 5.mp3"),
+  new Audio("./long break/JoJo's Bizarre Adventure Opening 7.mp3"),
+  new Audio(
+    "./long break/meganeko - The Cyber Grind (Ultrakill Soundtrack).mp3"
+  ),
+];
+let sfx = [
+  new Audio("./sfx/44 Dragon Quest 4 - Small Prize.mp3"),
+  new Audio("./sfx/45 Dragon Quest 4 - Win Big!.mp3"),
+  new Audio("./sfx/46 Dragon Quest 4 - Jackpot!.mp3"),
+];
+
+//pomodoro 4, break 5, pause 6, easter 1, finished 6, long break 5, sfx 3
+function randomNumberIndex(number) {
+  return Math.floor(Math.random() * number);
+}
+
+let alarmSound =
+  pomodoroCollections[randomNumberIndex(pomodoroCollections.length)];
 let alarmTime;
 let alarmSoundisPlaying = false;
-let pauseSound = new Audio("Chobits Opening.mp3");
+let pauseSound = pauseCollections[randomNumberIndex(pauseCollections.length)];
 
 // Update the count down every 1 second
 function calculation() {
@@ -120,6 +171,10 @@ function recordNote(
     ColumnIndex,
     RowIndex
   );
+
+  if (randomNumberIndex(10) == 0) {
+    easterEgg[randomNumberIndex(easterEgg.length)].play();
+  }
 
   var box = document.getElementById(dynamicDivStringIndex);
   var textBox = document.createElement("input");
@@ -265,17 +320,7 @@ function displayResult() {
 
     if (pomodoro[i] != "") {
       document.getElementById("pomodoro-time").value + ":00";
-      /*
-      console.log(" ");
-      console.log("ALL Pomodoro Reality: " + pomodoroDateDifference);
-      console.log("Pomodoro Reality: " + pomodoroDateDifference[i]);
-      console.log(
-        "Pomodoro Wish: " +
-          Number(document.getElementById("pomodoro-time").value) * 60
-      );
-      */
       if (
-        //1 >= 1500
         pomodoroDateDifference[i] >=
         Number(document.getElementById("pomodoro-time").value) * 60
       ) {
@@ -285,7 +330,6 @@ function displayResult() {
         document.getElementById("custom1Div" + i).style.backgroundColor =
           "LightPink";
       }
-      //
       var smallerBox3 = document.createElement("div");
       var smallerBox3Atr = document.createAttribute("id");
       smallerBox3Atr.value = "customDiv1Notes" + i;
@@ -372,14 +416,13 @@ function displayResult() {
       smallerBox3.textContent = storeNotes.get("note2Button" + i);
       smallerBox3.setAttributeNode(smallerBox3Atr);
       box.appendChild(smallerBox3);
-      // don't need console.log("desireShortBreak: " + desireShortBreak);
 
       var smallerBox4 = document.createElement("div");
       var smallerBox4Atr = document.createAttribute("id");
 
       var scoreEfficiency = (
         (formatToSeconds(desireShortBreakFormat[i]) /
-          shortBreakDateDifference[i]) * // need to make a function to convert string to seconds
+          shortBreakDateDifference[i]) *
         100
       ).toFixed(0);
       storeEfficiency.set("custom2DesireTime", [
@@ -511,9 +554,12 @@ function startPomodoro() {
     currentDate = new Date();
     firstButtonOfTheDay = true;
   }
-  pauseSound = new Audio("Chobits Opening.mp3");
+  pauseSound = pauseCollections[randomNumberIndex(pauseCollections.length)];
+  alarmSound.currentTime = 0;
+
   alarmSound.pause();
-  alarmSound = new Audio("Kiznaiver.mp3");
+  alarmSound =
+    pomodoroCollections[randomNumberIndex(pomodoroCollections.length)];
   alarmTime = document.getElementById("pomodoro-time").value * 60;
 
   let totalAlarmSeconds = alarmTime;
@@ -599,15 +645,12 @@ function startPomodoro() {
     pomodoroDate.push("");
     pomodoroDateDifference.push("");
     desirePomodoro.push("");
-    //desirePomodoroFormat.push("");
 
     shortBreak.push("");
     shortBreakPause.push("");
     shortBreakDate.push("");
     shortBreakDateDifference.push("");
     desireShortBreak.push("");
-    //desireShortBreakFormat.push("");
-    //desireShortBreakPercentFormat.push("");
 
     longBreak.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -616,12 +659,6 @@ function startPomodoro() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
-    //desire push
-    /*
-    desireLongBreakPercentFormat.push(
-      document.getElementById("long-break-time").value
-    );
-    */
     desireLongBreak.push(document.getElementById("pomodoro-time").value);
     oldDate = currentDate;
     currentDate = new Date();
@@ -648,11 +685,6 @@ function startPomodoro() {
     }
   }
 
-  /*
-  console.log(" ");
-  console.log("desireShortBreakFormat: " + desireShortBreakFormat);
-  console.log("desireLongBreakFormat: " + desireLongBreakFormat);
-  */
   displayResult();
 
   reset();
@@ -724,18 +756,6 @@ function startBreak() {
     document.getElementById("break-time").value + "%"
   );
   desireLongBreakPercentFormat.push("");
-  /*
-  console.log(" ");
-  console.log("startBreak");
-  console.log("desirePomodoroFormat: " + desirePomodoroFormat);
-  console.log("desireShortBreakFormat: " + desireShortBreakFormat);
-  console.log("desireLongBreakFormat: " + desireLongBreakFormat);
-  */
-
-  if (firstButtonOfTheDay == false) {
-    currentDate = new Date();
-    firstButtonOfTheDay = true;
-  }
 
   if (buttonPressed == "pomodoro") {
     shortBreak.push("");
@@ -743,16 +763,12 @@ function startBreak() {
     shortBreakDate.push("");
     shortBreakDateDifference.push("");
     desireShortBreak.push("");
-    //desireShortBreakFormat.push("");
-    //desireShortBreakPercentFormat.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
     longBreakDateDifference.push("");
     desireLongBreak.push("");
-    //desireLongBreakFormat.push("");
-    //desireLongBreakPercentFormat.push("");
 
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -789,9 +805,11 @@ function startBreak() {
     }
   }
 
-  pauseSound = new Audio("Chobits Opening.mp3");
+  pauseSound = pauseCollections[randomNumberIndex(pauseCollections.length)];
+  alarmSound.currentTime = 0;
+
   alarmSound.pause();
-  alarmSound = new Audio("Cowboy Bebop.mp3");
+  alarmSound = breakCollections[randomNumberIndex(breakCollections.length)];
 
   displayResult();
   reset();
@@ -829,6 +847,31 @@ function startBreak() {
   button4.removeAttribute("disabled");
 
   alarmSoundisPlaying = false;
+
+  if (
+    firstButtonOfTheDay &&
+    Number(document.getElementById("pomodoro-time").value) * 120 <
+      pomodoroDateDifference[pomodoroDateDifference.length - 1]
+  ) {
+    sfx[2].play();
+  } else if (
+    firstButtonOfTheDay &&
+    Number(document.getElementById("pomodoro-time").value) * 60 <
+      pomodoroDateDifference[pomodoroDateDifference.length - 1]
+  ) {
+    sfx[1].play();
+  } else if (
+    firstButtonOfTheDay &&
+    Number(document.getElementById("pomodoro-time").value) * 60 >
+      pomodoroDateDifference[pomodoroDateDifference.length - 1]
+  ) {
+    sfx[0].play();
+  }
+
+  if (firstButtonOfTheDay == false) {
+    currentDate = new Date();
+    firstButtonOfTheDay = true;
+  }
 }
 function reset() {
   totalSeconds = 0;
@@ -866,25 +909,9 @@ function startLongBreak() {
   desireLongBreakPercentFormat.push(
     document.getElementById("long-break-time").value + "%"
   );
-  /*
-  if (buttonPressed == "pomodoro") {
-    desirePomodoroFormat.push(timeFormat);
-  }
-
-  console.log(" ");
-  console.log("startLongBreak");
-  console.log("desirePomodoroFormat: " + desirePomodoroFormat);
-  console.log("desireShortBreakFormat: " + desireShortBreakFormat);
-  console.log("desireLongBreakFormat: " + desireLongBreakFormat);
-*/
 
   totalSecondsPomodoro += totalSeconds;
   totalSeconds2PomodoroPause += totalSeconds2;
-
-  if (firstButtonOfTheDay == false) {
-    currentDate = new Date();
-    firstButtonOfTheDay = true;
-  }
 
   if (buttonPressed == "pomodoro") {
     shortBreak.push("");
@@ -892,16 +919,12 @@ function startLongBreak() {
     shortBreakDate.push("");
     shortBreakDateDifference.push("");
     desireShortBreak.push("");
-    //desireShortBreakFormat.push("");
-    //desireShortBreakPercentFormat.push("");
 
     longBreak.push("");
     longBreakPause.push("");
     longBreakDate.push("");
     longBreakDateDifference.push("");
     desireLongBreak.push("");
-    //desireLongBreakFormat.push("");
-    //desireLongBreakPercentFormat.push("");
 
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -910,7 +933,6 @@ function startLongBreak() {
         ":" +
         (seconds > 9 ? seconds : "0" + seconds)
     );
-    //desire push
 
     desirePomodoro.push(document.getElementById("pomodoro-time").value);
     hours = Math.floor(totalSeconds2 / 3600);
@@ -937,9 +959,12 @@ function startLongBreak() {
       pomodoroPause.push("");
     }
   }
-  pauseSound = new Audio("Chobits Opening.mp3");
+  pauseSound = pauseCollections[randomNumberIndex(pauseCollections.length)];
+  alarmSound.currentTime = 0;
+
   alarmSound.pause();
-  alarmSound = new Audio("Hype.mp3");
+  alarmSound =
+    longBreakCollections[randomNumberIndex(longBreakCollections.length)];
 
   displayResult();
 
@@ -979,6 +1004,36 @@ function startLongBreak() {
   button4.removeAttribute("disabled");
 
   alarmSoundisPlaying = false;
+  console.log(
+    document.getElementById("pomodoro-time").value +
+      "<" +
+      pomodoroDateDifference[pomodoroDateDifference.length - 1]
+  );
+
+  if (
+    firstButtonOfTheDay &&
+    Number(document.getElementById("pomodoro-time").value) * 120 <
+      pomodoroDateDifference[pomodoroDateDifference.length - 1]
+  ) {
+    sfx[2].play();
+  } else if (
+    firstButtonOfTheDay &&
+    Number(document.getElementById("pomodoro-time").value) * 60 <
+      pomodoroDateDifference[pomodoroDateDifference.length - 1]
+  ) {
+    sfx[1].play();
+  } else if (
+    firstButtonOfTheDay &&
+    Number(document.getElementById("pomodoro-time").value) * 60 >
+      pomodoroDateDifference[pomodoroDateDifference.length - 1]
+  ) {
+    sfx[0].play();
+  }
+
+  if (firstButtonOfTheDay == false) {
+    currentDate = new Date();
+    firstButtonOfTheDay = true;
+  }
 }
 
 function myPause() {
@@ -1058,6 +1113,7 @@ var div2 = document.querySelector("#test2");
 div2.appendChild(pauseButton);
 
 function finishButton() {
+  finishedCollections[randomNumberIndex(finishedCollections.length)].play();
   if (buttonPressed == "pomodoro") {
     totalSecondsPomodoro += totalSeconds;
     totalSeconds2PomodoroPause += totalSeconds2;
