@@ -51,6 +51,8 @@ let storeNotes = new Map();
 //new tracking: additional data/following score
 let storeEfficiency = new Map();
 
+let splitTrack = [];
+
 //total accumulation of seconds for displaying results
 let totalSecondsPomodoro = 0;
 let totalSeconds2PomodoroPause = 0;
@@ -66,13 +68,22 @@ let pomodoroCollections = [
   new Audio(
     "./pomodoro/Shin Megami Tensei IV OST - Ikebukuro Underground District.mp3"
   ),
+  new Audio("./pomodoro/beginning.mp3"),
+  new Audio("./pomodoro/Oh My.mp3"),
+  new Audio("./pomodoro/Scoreboard by Apollos Hester - Songify This.mp3"),
+  new Audio("./pomodoro/Undertale OST - 085 - Fallen Down (Reprise).mp3"),
   new Audio("./pomodoro/Tricolor Airline.mp3"),
+  new Audio("./pomodoro/Uwa!! So Temperate♫.mp3"),
 ];
 let breakCollections = [
   new Audio("./break/Cowboy Bebop.mp3"),
   new Audio("./break/Hunter X Hunter - Opening 1 _ Departure!.mp3"),
   new Audio("./break/Naruto Shippuuden OP 1 Hero's Comeback.mp3"),
   new Audio("./break/One Piece Opening 1 - FUNimation dub - We Are!.mp3"),
+  new Audio("./break/Bruce Lee Remix - Be Water My Friend.mp3"),
+  new Audio("./break/let go.mp3"),
+  new Audio("./break/Undertale Mettaton EX Theme  Death By Glamour.mp3"),
+  new Audio("./break/Undertale OST - 059 - Spider Dance.mp3"),
   new Audio("./break/Person 3 opening edited.mp3"),
 ];
 let pauseCollections = [
@@ -82,6 +93,11 @@ let pauseCollections = [
   new Audio("./pause/Kira's Theme (Elevator Music).mp3"),
   new Audio("./pause/Persona 3 OST.mp3"),
   new Audio("./pause/Yum Cha.mp3"),
+  new Audio("./pause/SwuM x bsd.u - Swishers.mp3"),
+  new Audio(
+    "./pause/t e l e p a t h テレパシー能力者 - 強い願望 (Strong Desire).mp3"
+  ),
+  new Audio("./pause/Wii Shop Channel.mp3"),
 ];
 let easterEgg = [new Audio("./easter egg/Among Us Drip Theme Song.mp3")];
 let finishedCollections = [
@@ -92,6 +108,17 @@ let finishedCollections = [
     "./finished/Fushigi no Dungeon - Torneko no Daibouken Eternal Happiness.mp3"
   ),
   new Audio("./finished/Hunter X Hunter - Ending 6.mp3"),
+  new Audio("./finished/AKMU - 200 %.mp3"),
+  new Audio("./finished/Ever 17 PSP Arrange OST - 19 - Heilmittel-.mp3"),
+  new Audio(
+    "./finished/Mister Rogers Remixed  Garden of Your Mind  PBS Digital Studios.mp3"
+  ),
+  new Audio(
+    "./finished/My Hero Academia Season 3 – Opening Theme 2 – Make my story.mp3"
+  ),
+  new Audio("./finished/Simple Plan - Ordinary Life.mp3"),
+  new Audio("./finished/Songify This - BELIEVE IN YOURSELF.mp3"),
+  new Audio("./finished/Today Again So Pure A Blue.mp3"),
   new Audio("./finished/One Piece ED 08 - Shining ray.mp3"),
 ];
 let longBreakCollections = [
@@ -102,11 +129,14 @@ let longBreakCollections = [
   new Audio(
     "./long break/meganeko - The Cyber Grind (Ultrakill Soundtrack).mp3"
   ),
+  new Audio("./long break/The Chemical Brothers - Go Ft Q-Tip.mp3"),
+  new Audio("./long break/Time is running out.mp3"),
 ];
 let sfx = [
   new Audio("./sfx/44 Dragon Quest 4 - Small Prize.mp3"),
   new Audio("./sfx/45 Dragon Quest 4 - Win Big!.mp3"),
   new Audio("./sfx/46 Dragon Quest 4 - Jackpot!.mp3"),
+  new Audio("./sfx/M. Bison 'Yes Yes!' Widescreen HD reupload.mp3"),
 ];
 
 //pomodoro 4, break 5, pause 6, easter 1, finished 6, long break 5, sfx 3
@@ -279,6 +309,427 @@ function clickDoneButton(
   box.appendChild(noteButton);
 }
 
+function run() {
+  var number1 = document.getElementById("input1").value;
+  var number2 = document.getElementById("input2").value;
+  var number3 = document.getElementById("input3").value;
+  document.getElementById("noideawhatsgoingon2").textContent =
+    Number(number1) + Number(number2) + Number(number3);
+}
+
+function finishModal(columnIndex, rowIndex, which) {
+  var number1 = document.getElementById("input1").value;
+  var number2 = document.getElementById("input2").value;
+  var number3 = document.getElementById("input3").value;
+  var totalNumber = document.getElementById("noideawhatsgoingon").textContent;
+  var whichWhich;
+  var whichWhichDate;
+
+  if (which == "pomodoro") {
+    whichWhich = pomodoro;
+    whichWhichDate = pomodoroDate;
+    whichWhichDateDifference = pomodoroDateDifference;
+  } else if (which == "short break") {
+    whichWhich = shortBreak;
+    whichWhichDate = shortBreakDate;
+    whichWhichDateDifference = shortBreakDateDifference;
+  } else if (which == "long break") {
+    whichWhich = longBreak;
+    whichWhichDate = longBreakDate;
+    whichWhichDateDifference = longBreakDateDifference;
+  }
+
+  if (
+    Number(number1) + Number(number3) == Number(totalNumber) ||
+    Number(number1) + Number(number2) == Number(totalNumber)
+  ) {
+    splitTrack[rowIndex] = true;
+    if (
+      (Number(number1) == 0 && Number(number2) != 0 && Number(number3) == 0) ||
+      (Number(number1) == 0 && Number(number2) == 0 && Number(number3) != 0) ||
+      (Number(number1) != 0 && Number(number2) == 0 && Number(number3) != 0) ||
+      (Number(number1) != 0 && Number(number2) != 0 && Number(number3) == 0) ||
+      (Number(number1) != 0 && Number(number2) == 0 && Number(number3) == 0)
+    ) {
+      //all the manipulation of data split is here
+      if (
+        Number(number1) != 0 &&
+        Number(number2) == 0 &&
+        Number(number3) == 0
+      ) {
+        pomodoroDate[rowIndex] = whichWhichDate[rowIndex];
+        pomodoroDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
+
+        Number(number1) < 10
+          ? (pomodoro[rowIndex] = "00:0" + Number(number1) + ":00")
+          : (pomodoro[rowIndex] = "00:" + Number(number1) + ":00");
+
+        var scoreEfficiency = (
+          (formatToSeconds(pomodoro[rowIndex]) /
+            (Number(document.getElementById("pomodoro-time").value) * 60)) *
+          100
+        ).toFixed(0);
+
+        storeEfficiency.set("custom1DesireTime" + rowIndex, [
+          " Desire: " +
+            minutesToFormat(
+              Number(document.getElementById("pomodoro-time").value)
+            ),
+          " Efficiency: " + scoreEfficiency + " %",
+        ]);
+        shortBreakDate[rowIndex] = "";
+        shortBreak[rowIndex] = "";
+        longBreakDate[rowIndex] = "";
+        longBreak[rowIndex] = "";
+      } else if (
+        Number(number1) != 0 &&
+        Number(number2) != 0 &&
+        Number(number3) == 0
+      ) {
+        pomodoroDate[rowIndex] = whichWhichDate[rowIndex];
+        shortBreakDate[rowIndex] = whichWhichDate[rowIndex];
+        pomodoroDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
+        shortBreakDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
+
+        Number(number1) < 10
+          ? (pomodoro[rowIndex] = "00:0" + Number(number1) + ":00")
+          : (pomodoro[rowIndex] = "00:" + Number(number1) + ":00");
+        Number(number2) < 10
+          ? (shortBreak[rowIndex] = "00:0" + Number(number2) + ":00")
+          : (shortBreak[rowIndex] = "00:" + Number(number2) + ":00");
+
+        var scoreEfficiency = (
+          (formatToSeconds(pomodoro[rowIndex]) /
+            (Number(document.getElementById("pomodoro-time").value) * 60)) *
+          100
+        ).toFixed(0);
+
+        storeEfficiency.set("custom1DesireTime" + rowIndex, [
+          " Desire: " +
+            minutesToFormat(
+              Number(document.getElementById("pomodoro-time").value)
+            ),
+          " Efficiency: " + scoreEfficiency + " %",
+        ]);
+
+        var scoreEfficiency = (
+          ((Number(number1) * 60) / formatToSeconds(shortBreak[rowIndex])) *
+          100
+        ).toFixed(0);
+
+        storeEfficiency.set("custom2DesireTime" + rowIndex, [
+          " Desire: " + minutesToFormat(Number(number1)),
+          document.getElementById("break-time").value + "%",
+          " Efficiency: " + scoreEfficiency + " %",
+        ]);
+
+        longBreakDate[rowIndex] = "";
+        longBreak[rowIndex] = "";
+      } else if (
+        Number(number1) != 0 &&
+        Number(number2) == 0 &&
+        Number(number3) != 0
+      ) {
+        pomodoroDate[rowIndex] = whichWhichDate[rowIndex];
+        longBreakDate[rowIndex] = whichWhichDate[rowIndex];
+        pomodoroDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
+        longBreakDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
+
+        Number(number1) < 10
+          ? (pomodoro[rowIndex] = "00:0" + Number(number1) + ":00")
+          : (pomodoro[rowIndex] = "00:" + Number(number1) + ":00");
+        Number(number3) < 10
+          ? (longBreak[rowIndex] = "00:0" + Number(number3) + ":00")
+          : (longBreak[rowIndex] = "00:" + Number(number3) + ":00");
+
+        var scoreEfficiency = (
+          (formatToSeconds(pomodoro[rowIndex]) /
+            (Number(document.getElementById("pomodoro-time").value) * 60)) *
+          100
+        ).toFixed(0);
+
+        storeEfficiency.set("custom1DesireTime" + rowIndex, [
+          " Desire: " +
+            minutesToFormat(
+              Number(document.getElementById("pomodoro-time").value)
+            ),
+          " Efficiency: " + scoreEfficiency + " %",
+        ]);
+
+        var scoreEfficiency = (
+          ((Number(number1) * 60) / formatToSeconds(longBreak[rowIndex])) *
+          100
+        ).toFixed(0);
+
+        storeEfficiency.set("custom3DesireTime" + rowIndex, [
+          " Desire: " + minutesToFormat(Number(number1)),
+          document.getElementById("long-break-time").value + "%",
+          " Efficiency: " + scoreEfficiency + " %",
+        ]);
+        shortBreakDate[rowIndex] = "";
+        shortBreak[rowIndex] = "";
+      } else if (
+        Number(number1) == 0 &&
+        Number(number2) != 0 &&
+        Number(number3) == 0
+      ) {
+        shortBreakDate[rowIndex] = whichWhichDate[rowIndex];
+        shortBreakDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
+
+        Number(number2) < 10
+          ? (shortBreak[rowIndex] = "00:0" + Number(number2) + ":00")
+          : (shortBreak[rowIndex] = "00:" + Number(number2) + ":00");
+
+        var scoreEfficiency = (
+          (0 / formatToSeconds(shortBreak[rowIndex])) *
+          100
+        ).toFixed(0);
+
+        storeEfficiency.set("custom2DesireTime" + rowIndex, [
+          " Desire: " + minutesToFormat(0),
+          document.getElementById("break-time").value + "%",
+          " Efficiency: " + scoreEfficiency + " %",
+        ]);
+
+        pomodoroDate[rowIndex] = "";
+        pomodoro[rowIndex] = "";
+        longBreakDate[rowIndex] = "";
+        longBreak[rowIndex] = "";
+      } else if (
+        Number(number1) == 0 &&
+        Number(number2) == 0 &&
+        Number(number3) != 0
+      ) {
+        longBreakDate[rowIndex] = whichWhichDate[rowIndex];
+        longBreakDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
+
+        Number(number3) < 10
+          ? (longBreak[rowIndex] = "00:0" + Number(number3) + ":00")
+          : (longBreak[rowIndex] = "00:" + Number(number3) + ":00");
+
+        var scoreEfficiency = (
+          (0 / formatToSeconds(longBreak[rowIndex])) *
+          100
+        ).toFixed(0);
+
+        storeEfficiency.set("custom3DesireTime" + rowIndex, [
+          " Desire: " + minutesToFormat(0),
+          document.getElementById("long-break-time").value + "%",
+          " Efficiency: " + scoreEfficiency + " %",
+        ]);
+        pomodoroDate[rowIndex] = "";
+        pomodoro[rowIndex] = "";
+        shortBreakDate[rowIndex] = "";
+        shortBreak[rowIndex] = "";
+      }
+
+      document.querySelector(".customModal").style.display = "none";
+      var customDivv = document.getElementById(
+        "custom" + columnIndex + "Div" + rowIndex
+      );
+      customDivv.removeChild(customDivv.lastChild);
+
+      displayResult();
+    }
+  } else {
+    if (Number(number1) == 0 && Number(number2) != 0 && Number(number3) != 0) {
+      alert("You can't have break and long break at the same time.");
+    } else if (
+      !(
+        (Number(number1) != 0 &&
+          Number(number2) == 0 &&
+          Number(number3) != 0) ||
+        (Number(number1) != 0 && Number(number2) != 0 && Number(number3) == 0)
+      )
+    ) {
+      alert("One of three option must be 0.");
+    } else {
+      alert(
+        totalNumber +
+          " does not equal to " +
+          (Number(number1) + Number(number2) + Number(number3)) +
+          " minutes."
+      );
+    }
+  }
+}
+
+function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
+  var modal = document.createElement("div");
+  var modalAtr = document.createAttribute("class");
+  modalAtr.value = "customModal";
+  modal.setAttributeNode(modalAtr);
+
+  var customDivBox = document.getElementById(customDiv);
+  customDivBox.appendChild(modal);
+
+  var modalContent = document.createElement("div");
+  var modalContentAtr = document.createAttribute("id");
+  modalContentAtr.value = "modal-content";
+  modalContent.setAttributeNode(modalContentAtr);
+  modal.appendChild(modalContent);
+
+  var modalContentSpan = document.createElement("span");
+  var modalContentSpanAtr = document.createAttribute("class");
+  modalContentSpanAtr.value = "close";
+  modalContentSpan.innerHTML = "&times;";
+  modalContentSpan.setAttributeNode(modalContentSpanAtr);
+  modalContent.appendChild(modalContentSpan);
+
+  var modalContentp = document.createElement("p");
+  if (which == "pomodoro") {
+    modalContentp.textContent =
+      "Splitting pomodoro: " +
+      pomodoroDate[rowIndex] +
+      " " +
+      pomodoro[rowIndex] +
+      pomodoroPause[rowIndex];
+    originalNumber = Math.floor(pomodoroDateDifference[rowIndex] / 60);
+  } else if (which == "short break") {
+    modalContentp.textContent =
+      "Splitting short break: " +
+      shortBreakDate[rowIndex] +
+      " " +
+      shortBreak[rowIndex] +
+      shortBreakPause[rowIndex];
+    originalNumber = Math.floor(shortBreakDateDifference[rowIndex] / 60);
+  } else if (which == "long break") {
+    modalContentp.textContent =
+      "Splitting long break: " +
+      longBreakDate[rowIndex] +
+      " " +
+      longBreak[rowIndex] +
+      longBreakPause[rowIndex];
+    originalNumber = Math.floor(longBreakDateDifference[rowIndex] / 60);
+  }
+
+  var modalContentp2 = document.createElement("p");
+  var modalContentp2atr = document.createAttribute("id");
+  modalContentp2atr.value = "noideawhatsgoingon";
+  modalContentp2.setAttributeNode(modalContentp2atr);
+
+  var modalContentp3 = document.createElement("p");
+  var modalContentp3atr = document.createAttribute("id");
+  modalContentp3atr.value = "noideawhatsgoingon2";
+  modalContentp3.setAttributeNode(modalContentp3atr);
+
+  modalContentp2.textContent = originalNumber;
+
+  var modalContentInput1 = document.createElement("input");
+  var modalContentInput1Atr = document.createAttribute("id");
+  modalContentInput1Atr.value = "input1";
+  var modalContentInput1Atr2 = document.createAttribute("type");
+  modalContentInput1Atr2.value = "number";
+  var modalContentInput1Atr3 = document.createAttribute("value");
+  modalContentInput1Atr3.value = "0";
+  var modalContentInput1Atr4 = document.createAttribute("min");
+  modalContentInput1Atr4.value = "0";
+  var modalContentInput1Atr5 = document.createAttribute("max");
+  modalContentInput1Atr5.value = modalContentp2.textContent;
+  var modalContentInput1Atr6 = document.createAttribute("onclick");
+  modalContentInput1Atr6.value = "run()";
+  modalContentInput1.setAttributeNode(modalContentInput1Atr);
+  modalContentInput1.setAttributeNode(modalContentInput1Atr2);
+  modalContentInput1.setAttributeNode(modalContentInput1Atr3);
+  modalContentInput1.setAttributeNode(modalContentInput1Atr4);
+  modalContentInput1.setAttributeNode(modalContentInput1Atr5);
+  modalContentInput1.setAttributeNode(modalContentInput1Atr6);
+
+  var modalContentInput2 = document.createElement("input");
+  var modalContentInput2Atr = document.createAttribute("id");
+  modalContentInput2Atr.value = "input2";
+  var modalContentInput2Atr2 = document.createAttribute("type");
+  modalContentInput2Atr2.value = "number";
+  var modalContentInput2Atr3 = document.createAttribute("value");
+  modalContentInput2Atr3.value = "0";
+  var modalContentInput2Atr4 = document.createAttribute("min");
+  modalContentInput2Atr4.value = "0";
+  var modalContentInput2Atr5 = document.createAttribute("max");
+  modalContentInput2Atr5.value = modalContentp2.textContent;
+  var modalContentInput2Atr6 = document.createAttribute("onclick");
+  modalContentInput2Atr6.value = "run()";
+  modalContentInput2.setAttributeNode(modalContentInput2Atr);
+  modalContentInput2.setAttributeNode(modalContentInput2Atr2);
+  modalContentInput2.setAttributeNode(modalContentInput2Atr3);
+  modalContentInput2.setAttributeNode(modalContentInput2Atr4);
+  modalContentInput2.setAttributeNode(modalContentInput2Atr5);
+  modalContentInput2.setAttributeNode(modalContentInput2Atr6);
+
+  var modalContentInput3 = document.createElement("input");
+  var modalContentInput3Atr = document.createAttribute("id");
+  modalContentInput3Atr.value = "input3";
+  var modalContentInput3Atr2 = document.createAttribute("type");
+  modalContentInput3Atr2.value = "number";
+  var modalContentInput3Atr3 = document.createAttribute("value");
+  modalContentInput3Atr3.value = "0";
+  var modalContentInput3Atr4 = document.createAttribute("min");
+  modalContentInput3Atr4.value = "0";
+  var modalContentInput3Atr5 = document.createAttribute("max");
+  modalContentInput3Atr5.value = modalContentp2.textContent;
+  var modalContentInput3Atr6 = document.createAttribute("onclick");
+  modalContentInput3Atr6.value = "run()";
+  modalContentInput3.setAttributeNode(modalContentInput3Atr);
+  modalContentInput3.setAttributeNode(modalContentInput3Atr2);
+  modalContentInput3.setAttributeNode(modalContentInput3Atr3);
+  modalContentInput3.setAttributeNode(modalContentInput3Atr4);
+  modalContentInput3.setAttributeNode(modalContentInput3Atr5);
+  modalContentInput3.setAttributeNode(modalContentInput3Atr6);
+
+  var modalFinish = document.createElement("button");
+  var modalFinishAtr = document.createAttribute("id");
+  var modalFinishAtr2 = document.createAttribute("onclick");
+  modalFinishAtr2.value =
+    "finishModal(" + columnIndex + "," + rowIndex + ", '" + which + "')";
+  modalFinishAtr.value = "finishModal";
+  modalFinish.textContent = "Split";
+  modalFinish.setAttributeNode(modalFinishAtr);
+  modalFinish.setAttributeNode(modalFinishAtr2);
+
+  modalContent.appendChild(modalContentp);
+  modalContent.appendChild(modalContentp2);
+  modalContent.appendChild(modalContentInput1);
+  modalContent.appendChild(modalContentInput2);
+  modalContent.appendChild(modalContentInput3);
+  modalContent.appendChild(modalContentp3);
+  modalContent.appendChild(modalFinish);
+
+  //id is dynamic thus this is required and not in css
+  modal.style.display = "none"; /* Hidden by default */
+  modal.style.position = "fixed"; // Stay in place
+  modal.style.z_index = "1"; /* Sit on top */
+  modal.style.padding_top = "100px"; // Location of the box
+  modal.style.left = "0";
+  modal.style.top = "0";
+  modal.style.width = "100%"; // Full width
+  modal.style.height = "100%"; // Full height
+  modal.style.overflow = "auto"; // Enable scroll if needed
+  modal.style.background_color = "rgb(0,0,0)"; /* Fallback color */
+  modal.style.background_color = "rgba(0,0,0,0.4)"; // Black w/ opacity      */
+
+  var customSplit = document.getElementById(customSplit);
+
+  modal.style.display = "block";
+
+  window.onclick = function (event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+      var customDivv = document.getElementById(
+        "custom" + columnIndex + "Div" + rowIndex
+      );
+      customDivv.removeChild(customDivv.lastChild);
+    }
+  };
+
+  var close = document.querySelector(".close");
+  close.onclick = function () {
+    modal.style.display = "none";
+    var customDivv = document.getElementById(
+      "custom" + columnIndex + "Div" + rowIndex
+    );
+    customDivv.removeChild(customDivv.lastChild);
+  };
+}
+
 //This is important for retaining data for displaying
 function displayResult() {
   document.getElementById("column1Header").innerHTML = "Pomodoro:";
@@ -337,35 +788,65 @@ function displayResult() {
       smallerBox3.setAttributeNode(smallerBox3Atr);
       box.appendChild(smallerBox3);
 
-      var smallerBox4 = document.createElement("div");
-      var smallerBox4Atr = document.createAttribute("id");
-      var scoreEfficiency = (
-        (pomodoroDateDifference[i] / (Number(desirePomodoro[i]) * 60)) *
-        100
-      ).toFixed(0);
-      storeEfficiency.set("custom1DesireTime", [
-        " Desire: " + desirePomodoroFormat[i],
-        " Efficiency: " + scoreEfficiency + " %",
-      ]);
-      smallerBox4Atr.value = "custom1DesireTime";
-      smallerBox4.textContent = storeEfficiency.get("custom1DesireTime");
-      smallerBox4.setAttributeNode(smallerBox4Atr);
-      box.appendChild(smallerBox4);
+      if (pomodoro[i] != "00:00:00") {
+        var smallerBox4 = document.createElement("div");
+        var smallerBox4Atr = document.createAttribute("id");
+        smallerBox4Atr.value = "custom1DesireTime" + i;
+        if (splitTrack[i] == false) {
+          var scoreEfficiency = (
+            (pomodoroDateDifference[i] / (Number(desirePomodoro[i]) * 60)) *
+            100
+          ).toFixed(0);
+          storeEfficiency.set("custom1DesireTime" + i, [
+            " Desire: " + desirePomodoroFormat[i],
+            " Efficiency: " + scoreEfficiency + " %",
+          ]);
+        }
 
-      var noteButton = document.createElement("button");
-      var noteButtonAtr = document.createAttribute("id");
-      var noteButtonAtr2 = document.createAttribute("onclick");
-      noteButtonAtr2.value =
-        "recordNote(1,'custom1Div" + i + "', 'note1Button" + i + "'," + i + ")";
-      noteButton.setAttributeNode(noteButtonAtr2);
-      if (storeNotes.has("note1Button" + i)) {
-        noteButton.textContent = "edit";
-      } else {
-        noteButton.textContent = "+";
+        smallerBox4.textContent = storeEfficiency.get("custom1DesireTime" + i);
+        smallerBox4.setAttributeNode(smallerBox4Atr);
+        box.appendChild(smallerBox4);
+
+        var splitButton = document.createElement("button");
+        var splitButtonAtr = document.createAttribute("id");
+        var splitButtonAtr2 = document.createAttribute("onclick");
+        splitButtonAtr2.value =
+          "splitTime(1,'custom1Div" +
+          i +
+          "', 'split1Button" +
+          i +
+          "'," +
+          i +
+          ", 'pomodoro'" +
+          ")";
+        splitButton.setAttributeNode(splitButtonAtr2);
+        splitButton.textContent = "split";
+        splitButtonAtr.value = "split1Button" + i;
+        splitButton.setAttributeNode(splitButtonAtr);
+
+        box.appendChild(splitButton);
+
+        var noteButton = document.createElement("button");
+        var noteButtonAtr = document.createAttribute("id");
+        var noteButtonAtr2 = document.createAttribute("onclick");
+        noteButtonAtr2.value =
+          "recordNote(1,'custom1Div" +
+          i +
+          "', 'note1Button" +
+          i +
+          "'," +
+          i +
+          ")";
+        noteButton.setAttributeNode(noteButtonAtr2);
+        if (storeNotes.has("note1Button" + i)) {
+          noteButton.textContent = "edit";
+        } else {
+          noteButton.textContent = "+";
+        }
+        noteButtonAtr.value = "note1Button" + i;
+        noteButton.setAttributeNode(noteButtonAtr);
+        box.appendChild(noteButton);
       }
-      noteButtonAtr.value = "note1Button" + i;
-      noteButton.setAttributeNode(noteButtonAtr);
-      box.appendChild(noteButton);
     }
   }
   for (i = 0; i < shortBreak.length; i++) {
@@ -395,7 +876,6 @@ function displayResult() {
     smallerBox2.textContent = shortBreak[i] + shortBreakPause[i];
 
     parentBox.appendChild(box);
-
     box.appendChild(smallerBox);
     box.appendChild(smallerBox2);
     if (shortBreak[i] != "") {
@@ -417,38 +897,66 @@ function displayResult() {
       smallerBox3.setAttributeNode(smallerBox3Atr);
       box.appendChild(smallerBox3);
 
-      var smallerBox4 = document.createElement("div");
-      var smallerBox4Atr = document.createAttribute("id");
+      if (shortBreak[i] != "00:00:00") {
+        var smallerBox4 = document.createElement("div");
+        var smallerBox4Atr = document.createAttribute("id");
+        if (splitTrack[i] == false) {
+          var scoreEfficiency = (
+            (formatToSeconds(desireShortBreakFormat[i]) /
+              shortBreakDateDifference[i]) *
+            100
+          ).toFixed(0);
+          storeEfficiency.set("custom2DesireTime" + i, [
+            " Desire: " + desireShortBreakFormat[i],
+            desireShortBreakPercentFormat[i],
+            " Efficiency: " + scoreEfficiency + " %",
+          ]);
+        }
+        smallerBox4Atr.value = "custom2DesireTime" + i;
+        smallerBox4.textContent = storeEfficiency.get("custom2DesireTime" + i);
+        smallerBox4.setAttributeNode(smallerBox4Atr);
+        box.appendChild(smallerBox4);
 
-      var scoreEfficiency = (
-        (formatToSeconds(desireShortBreakFormat[i]) /
-          shortBreakDateDifference[i]) *
-        100
-      ).toFixed(0);
-      storeEfficiency.set("custom2DesireTime", [
-        " Desire: " + desireShortBreakFormat[i],
-        desireShortBreakPercentFormat[i],
-        " Efficiency: " + scoreEfficiency + " %",
-      ]);
-      smallerBox4Atr.value = "custom2DesireTime";
-      smallerBox4.textContent = storeEfficiency.get("custom2DesireTime");
-      smallerBox4.setAttributeNode(smallerBox4Atr);
-      box.appendChild(smallerBox4);
+        var splitButton = document.createElement("button");
+        var splitButtonAtr = document.createAttribute("id");
+        var splitButtonAtr2 = document.createAttribute("onclick");
+        splitButtonAtr2.value =
+          "splitTime(2,'custom2Div" +
+          i +
+          "', 'split2Button" +
+          i +
+          "'," +
+          i +
+          ", 'short break'" +
+          ")";
+        splitButton.setAttributeNode(splitButtonAtr2);
+        splitButton.textContent = "split";
+        splitButtonAtr.value = "split2Button" + i;
+        splitButton.setAttributeNode(splitButtonAtr);
 
-      var noteButton = document.createElement("button");
-      var noteButtonAtr = document.createAttribute("id");
-      var noteButtonAtr2 = document.createAttribute("onclick");
-      noteButtonAtr2.value =
-        "recordNote(2,'custom2Div" + i + "', 'note2Button" + i + "'," + i + ")";
-      noteButton.setAttributeNode(noteButtonAtr2);
-      if (storeNotes.has("note2Button" + i)) {
-        noteButton.textContent = "edit";
-      } else {
-        noteButton.textContent = "+";
+        box.appendChild(splitButton);
+
+        var noteButton = document.createElement("button");
+        var noteButtonAtr = document.createAttribute("id");
+        var noteButtonAtr2 = document.createAttribute("onclick");
+        noteButtonAtr2.value =
+          "recordNote(2,'custom2Div" +
+          i +
+          "', 'note2Button" +
+          i +
+          "'," +
+          i +
+          ")";
+        noteButton.setAttributeNode(noteButtonAtr2);
+        if (storeNotes.has("note2Button" + i)) {
+          noteButton.textContent = "edit";
+        } else {
+          noteButton.textContent = "+";
+        }
+        noteButtonAtr.value = "note2Button" + i;
+        noteButton.setAttributeNode(noteButtonAtr);
+        box.appendChild(noteButton);
       }
-      noteButtonAtr.value = "note2Button" + i;
-      noteButton.setAttributeNode(noteButtonAtr);
-      box.appendChild(noteButton);
     }
   }
   for (i = 0; i < longBreak.length; i++) {
@@ -500,51 +1008,97 @@ function displayResult() {
       smallerBox3.setAttributeNode(smallerBox3Atr);
       box.appendChild(smallerBox3);
 
-      var smallerBox4 = document.createElement("div");
-      var smallerBox4Atr = document.createAttribute("id");
+      if (longBreak[i] != "00:00:00") {
+        var smallerBox4 = document.createElement("div");
+        var smallerBox4Atr = document.createAttribute("id");
+        if (splitTrack[i] == false) {
+          var scoreEfficiency = (
+            (formatToSeconds(desireLongBreakFormat[i]) /
+              longBreakDateDifference[i]) *
+            100
+          ).toFixed(0);
+          storeEfficiency.set("custom3DesireTime" + i, [
+            " Desire: " + desireLongBreakFormat[i],
+            desireLongBreakPercentFormat[i],
+            " Efficiency: " + scoreEfficiency + " %",
+          ]);
+        }
+        smallerBox4Atr.value = "custom3DesireTime" + i;
+        smallerBox4.textContent = storeEfficiency.get("custom3DesireTime" + i);
+        smallerBox4.setAttributeNode(smallerBox4Atr);
+        box.appendChild(smallerBox4);
 
-      var scoreEfficiency = (
-        (formatToSeconds(desireLongBreakFormat[i]) /
-          longBreakDateDifference[i]) *
-        100
-      ).toFixed(0);
-      storeEfficiency.set("custom3DesireTime", [
-        " Desire: " + desireLongBreakFormat[i],
-        desireLongBreakPercentFormat[i],
-        " Efficiency: " + scoreEfficiency + " %",
-      ]);
-      smallerBox4Atr.value = "custom3DesireTime";
-      smallerBox4.textContent = storeEfficiency.get("custom3DesireTime");
-      smallerBox4.setAttributeNode(smallerBox4Atr);
-      box.appendChild(smallerBox4);
+        var splitButton = document.createElement("button");
+        var splitButtonAtr = document.createAttribute("id");
+        var splitButtonAtr2 = document.createAttribute("onclick");
+        splitButtonAtr2.value =
+          "splitTime(3,'custom3Div" +
+          i +
+          "', 'split3Button" +
+          i +
+          "'," +
+          i +
+          ", 'long break'" +
+          ")";
+        splitButton.setAttributeNode(splitButtonAtr2);
+        splitButton.textContent = "split";
+        splitButtonAtr.value = "split3Button" + i;
+        splitButton.setAttributeNode(splitButtonAtr);
 
-      var noteButton = document.createElement("button");
-      var noteButtonAtr = document.createAttribute("id");
-      var noteButtonAtr2 = document.createAttribute("onclick");
-      noteButtonAtr2.value =
-        "recordNote(3,'custom3Div" + i + "', 'note3Button" + i + "'," + i + ")";
-      noteButton.setAttributeNode(noteButtonAtr2);
-      if (storeNotes.has("note3Button" + i)) {
-        noteButton.textContent = "edit";
-      } else {
-        noteButton.textContent = "+";
+        box.appendChild(splitButton);
+
+        var noteButton = document.createElement("button");
+        var noteButtonAtr = document.createAttribute("id");
+        var noteButtonAtr2 = document.createAttribute("onclick");
+        noteButtonAtr2.value =
+          "recordNote(3,'custom3Div" +
+          i +
+          "', 'note3Button" +
+          i +
+          "'," +
+          i +
+          ")";
+        noteButton.setAttributeNode(noteButtonAtr2);
+        if (storeNotes.has("note3Button" + i)) {
+          noteButton.textContent = "edit";
+        } else {
+          noteButton.textContent = "+";
+        }
+        noteButtonAtr.value = "note3Button" + i;
+        noteButton.setAttributeNode(noteButtonAtr);
+        box.appendChild(noteButton);
       }
-      noteButtonAtr.value = "note3Button" + i;
-      noteButton.setAttributeNode(noteButtonAtr);
-      box.appendChild(noteButton);
+    }
+    if (splitTrack[i] == true) {
+      if (pomodoro[i] != "") {
+        document.getElementById("custom1Div" + i).style.backgroundColor =
+          "LightYellow";
+      }
+      if (shortBreak[i] != "") {
+        document.getElementById("custom2Div" + i).style.backgroundColor =
+          "LightYellow";
+      }
+      if (longBreak[i] != "") {
+        document.getElementById("custom3Div" + i).style.backgroundColor =
+          "LightYellow";
+      }
     }
   }
 }
 
 function formatToSeconds(format) {
-  console.log("format: " + format);
   var array = format.split(":");
   seconds =
     Number(array[0]) * 3600 + Number(array[1]) * 60 + Number(array[2]) * 1;
-
-  console.log("seconds: " + seconds);
-
   return seconds;
+}
+
+function minutesToFormat(minutes) {
+  hours = Math.floor(minutes / 60);
+  minutes = minutes % 60;
+  hourFormat = hours < 10 ? "0" + hours : hours;
+  minuteFormat = minutes < 10 ? "0" + minutes : minutes;
+  return hourFormat + ":" + minuteFormat + ":00";
 }
 
 let firstButtonOfTheDay = false;
@@ -600,6 +1154,8 @@ function startPomodoro() {
     longBreakDateDifference.push("");
     desireLongBreak.push("");
 
+    splitTrack.push(false);
+
     shortBreak.push(
       (hours > 9 ? hours : "0" + hours) +
         ":" +
@@ -651,6 +1207,8 @@ function startPomodoro() {
     shortBreakDate.push("");
     shortBreakDateDifference.push("");
     desireShortBreak.push("");
+
+    splitTrack.push(false);
 
     longBreak.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -770,6 +1328,8 @@ function startBreak() {
     longBreakDateDifference.push("");
     desireLongBreak.push("");
 
+    splitTrack.push(false);
+
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
         ":" +
@@ -873,6 +1433,7 @@ function startBreak() {
     firstButtonOfTheDay = true;
   }
 }
+
 function reset() {
   totalSeconds = 0;
   seconds = 0;
@@ -925,6 +1486,8 @@ function startLongBreak() {
     longBreakDate.push("");
     longBreakDateDifference.push("");
     desireLongBreak.push("");
+
+    splitTrack.push(false);
 
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
@@ -1004,11 +1567,6 @@ function startLongBreak() {
   button4.removeAttribute("disabled");
 
   alarmSoundisPlaying = false;
-  console.log(
-    document.getElementById("pomodoro-time").value +
-      "<" +
-      pomodoroDateDifference[pomodoroDateDifference.length - 1]
-  );
 
   if (
     firstButtonOfTheDay &&
