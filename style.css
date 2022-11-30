@@ -38,6 +38,10 @@ div {
 }
 */
 
+#canvas {
+  display: flex;
+}
+
 #modal-content {
   background-color: #fefefe;
   margin: auto;

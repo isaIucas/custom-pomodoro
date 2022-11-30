@@ -139,7 +139,6 @@ let sfx = [
   new Audio("./sfx/M. Bison 'Yes Yes!' Widescreen HD reupload.mp3"),
 ];
 
-//pomodoro 4, break 5, pause 6, easter 1, finished 6, long break 5, sfx 3
 function randomNumberIndex(number) {
   return Math.floor(Math.random() * number);
 }
@@ -376,6 +375,7 @@ function finishModal(columnIndex, rowIndex, which) {
               Number(document.getElementById("pomodoro-time").value)
             ),
           " Efficiency: " + scoreEfficiency + " %",
+          Number(scoreEfficiency),
         ]);
         shortBreakDate[rowIndex] = "";
         shortBreak[rowIndex] = "";
@@ -410,6 +410,7 @@ function finishModal(columnIndex, rowIndex, which) {
               Number(document.getElementById("pomodoro-time").value)
             ),
           " Efficiency: " + scoreEfficiency + " %",
+          Number(scoreEfficiency),
         ]);
 
         var scoreEfficiency = (
@@ -419,8 +420,9 @@ function finishModal(columnIndex, rowIndex, which) {
 
         storeEfficiency.set("custom2DesireTime" + rowIndex, [
           " Desire: " + minutesToFormat(Number(number1)),
-          document.getElementById("break-time").value + "%",
+          " | " + document.getElementById("break-time").value + "%" + " | ",
           " Efficiency: " + scoreEfficiency + " %",
+          Number(scoreEfficiency),
         ]);
 
         longBreakDate[rowIndex] = "";
@@ -454,6 +456,7 @@ function finishModal(columnIndex, rowIndex, which) {
               Number(document.getElementById("pomodoro-time").value)
             ),
           " Efficiency: " + scoreEfficiency + " %",
+          Number(scoreEfficiency),
         ]);
 
         var scoreEfficiency = (
@@ -463,8 +466,12 @@ function finishModal(columnIndex, rowIndex, which) {
 
         storeEfficiency.set("custom3DesireTime" + rowIndex, [
           " Desire: " + minutesToFormat(Number(number1)),
-          document.getElementById("long-break-time").value + "%",
+          " | " +
+            document.getElementById("long-break-time").value +
+            "%" +
+            " | ",
           " Efficiency: " + scoreEfficiency + " %",
+          Number(scoreEfficiency),
         ]);
         shortBreakDate[rowIndex] = "";
         shortBreak[rowIndex] = "";
@@ -487,8 +494,9 @@ function finishModal(columnIndex, rowIndex, which) {
 
         storeEfficiency.set("custom2DesireTime" + rowIndex, [
           " Desire: " + minutesToFormat(0),
-          document.getElementById("break-time").value + "%",
+          " | " + document.getElementById("break-time").value + "%" + " | ",
           " Efficiency: " + scoreEfficiency + " %",
+          Number(scoreEfficiency),
         ]);
 
         pomodoroDate[rowIndex] = "";
@@ -514,8 +522,12 @@ function finishModal(columnIndex, rowIndex, which) {
 
         storeEfficiency.set("custom3DesireTime" + rowIndex, [
           " Desire: " + minutesToFormat(0),
-          document.getElementById("long-break-time").value + "%",
+          " | " +
+            document.getElementById("long-break-time").value +
+            "%" +
+            " | ",
           " Efficiency: " + scoreEfficiency + " %",
+          Number(scoreEfficiency),
         ]);
         pomodoroDate[rowIndex] = "";
         pomodoro[rowIndex] = "";
@@ -579,7 +591,7 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
   var modalContentp = document.createElement("p");
   if (which == "pomodoro") {
     modalContentp.textContent =
-      "Splitting pomodoro: " +
+      "Splitting pomodoro minutes: " +
       pomodoroDate[rowIndex] +
       " " +
       pomodoro[rowIndex] +
@@ -587,7 +599,7 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
     originalNumber = Math.floor(pomodoroDateDifference[rowIndex] / 60);
   } else if (which == "short break") {
     modalContentp.textContent =
-      "Splitting short break: " +
+      "Splitting short break minutes: " +
       shortBreakDate[rowIndex] +
       " " +
       shortBreak[rowIndex] +
@@ -595,7 +607,7 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
     originalNumber = Math.floor(shortBreakDateDifference[rowIndex] / 60);
   } else if (which == "long break") {
     modalContentp.textContent =
-      "Splitting long break: " +
+      "Splitting long break minutes: " +
       longBreakDate[rowIndex] +
       " " +
       longBreak[rowIndex] +
@@ -800,10 +812,13 @@ function displayResult() {
           storeEfficiency.set("custom1DesireTime" + i, [
             " Desire: " + desirePomodoroFormat[i],
             " Efficiency: " + scoreEfficiency + " %",
+            Number(scoreEfficiency),
           ]);
         }
 
-        smallerBox4.textContent = storeEfficiency.get("custom1DesireTime" + i);
+        smallerBox4.textContent =
+          storeEfficiency.get("custom1DesireTime" + i)[0] +
+          storeEfficiency.get("custom1DesireTime" + i)[1];
         smallerBox4.setAttributeNode(smallerBox4Atr);
         box.appendChild(smallerBox4);
 
@@ -908,12 +923,16 @@ function displayResult() {
           ).toFixed(0);
           storeEfficiency.set("custom2DesireTime" + i, [
             " Desire: " + desireShortBreakFormat[i],
-            desireShortBreakPercentFormat[i],
+            " | " + desireShortBreakPercentFormat[i] + " | ",
             " Efficiency: " + scoreEfficiency + " %",
+            Number(scoreEfficiency),
           ]);
         }
         smallerBox4Atr.value = "custom2DesireTime" + i;
-        smallerBox4.textContent = storeEfficiency.get("custom2DesireTime" + i);
+        smallerBox4.textContent =
+          storeEfficiency.get("custom2DesireTime" + i)[0] +
+          storeEfficiency.get("custom2DesireTime" + i)[1] +
+          storeEfficiency.get("custom2DesireTime" + i)[2];
         smallerBox4.setAttributeNode(smallerBox4Atr);
         box.appendChild(smallerBox4);
 
@@ -1019,12 +1038,16 @@ function displayResult() {
           ).toFixed(0);
           storeEfficiency.set("custom3DesireTime" + i, [
             " Desire: " + desireLongBreakFormat[i],
-            desireLongBreakPercentFormat[i],
+            " | " + desireLongBreakPercentFormat[i] + " | ",
             " Efficiency: " + scoreEfficiency + " %",
+            Number(scoreEfficiency),
           ]);
         }
         smallerBox4Atr.value = "custom3DesireTime" + i;
-        smallerBox4.textContent = storeEfficiency.get("custom3DesireTime" + i);
+        smallerBox4.textContent =
+          storeEfficiency.get("custom3DesireTime" + i)[0] +
+          storeEfficiency.get("custom3DesireTime" + i)[1] +
+          storeEfficiency.get("custom3DesireTime" + i)[2];
         smallerBox4.setAttributeNode(smallerBox4Atr);
         box.appendChild(smallerBox4);
 
@@ -1682,6 +1705,135 @@ function finishButton() {
     totalSecondsLongBreak += totalSeconds;
     totalSeconds2LongBreakPause += totalSeconds2;
   }
+
+  var x_pomodoroValues = [];
+  var y_pomodoroValues = [];
+  pomodoroSession = 1;
+  pomodoroMaxEfficiency = 100;
+
+  for (i = 0; i < pomodoro.length; i++) {
+    if (pomodoro[i] != "") {
+      x_pomodoroValues.push(pomodoroSession);
+      efficiencyNumber = storeEfficiency.get("custom1DesireTime" + i)[2];
+      y_pomodoroValues.push(efficiencyNumber);
+      pomodoroSession += 1;
+      if (efficiencyNumber > pomodoroMaxEfficiency) {
+        pomodoroMaxEfficiency = efficiencyNumber;
+      }
+    }
+  }
+
+  var x_shortBreakValues = [];
+  var y_shortBreakValues = [];
+  shortBreakSession = 1;
+  shortBreakMaxEfficiency = 100;
+
+  for (i = 0; i < shortBreak.length; i++) {
+    if (shortBreak[i] != "") {
+      x_shortBreakValues.push(shortBreakSession);
+      efficiencyNumber = storeEfficiency.get("custom2DesireTime" + i)[3];
+      y_shortBreakValues.push(efficiencyNumber);
+      shortBreakSession += 1;
+      if (efficiencyNumber > shortBreakMaxEfficiency) {
+        shortBreakMaxEfficiency = efficiencyNumber;
+      }
+    }
+  }
+
+  var x_longBreakValues = [];
+  var y_longBreakValues = [];
+  longBreakSession = 1;
+  longBreakMaxEfficiency = 100;
+
+  for (i = 0; i < longBreak.length; i++) {
+    if (longBreak[i] != "") {
+      x_longBreakValues.push(longBreakSession);
+      efficiencyNumber = storeEfficiency.get("custom3DesireTime" + i)[3];
+      y_longBreakValues.push(efficiencyNumber);
+      longBreakSession += 1;
+      if (efficiencyNumber > longBreakMaxEfficiency) {
+        longBreakMaxEfficiency = efficiencyNumber;
+      }
+    }
+  }
+
+  new Chart("pomodoroChart", {
+    type: "line",
+    data: {
+      labels: x_pomodoroValues,
+      datasets: [
+        {
+          fill: false,
+          lineTension: 0,
+          backgroundColor: "rgba(0,0,255,1.0)",
+          borderColor: "rgba(0,0,255,0.1)",
+          data: y_pomodoroValues,
+        },
+      ],
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: "Pomodoro efficiency per session",
+      },
+      scales: {
+        yAxes: [{ ticks: { min: 0, max: pomodoroMaxEfficiency } }],
+      },
+    },
+  });
+
+  new Chart("shortBreakChart", {
+    type: "line",
+    data: {
+      labels: x_shortBreakValues,
+      datasets: [
+        {
+          fill: false,
+          lineTension: 0,
+          backgroundColor: "rgba(0,0,255,1.0)",
+          borderColor: "rgba(0,0,255,0.1)",
+          data: y_shortBreakValues,
+        },
+      ],
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: "Short Break efficiency per session",
+      },
+      scales: {
+        yAxes: [{ ticks: { min: 0, max: shortBreakMaxEfficiency } }],
+      },
+    },
+  });
+
+  new Chart("longBreakChart", {
+    type: "line",
+    data: {
+      labels: x_longBreakValues,
+      datasets: [
+        {
+          fill: false,
+          lineTension: 0,
+          backgroundColor: "rgba(0,0,255,1.0)",
+          borderColor: "rgba(0,0,255,0.1)",
+          data: y_longBreakValues,
+        },
+      ],
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: "Long Break efficiency per session",
+      },
+      scales: {
+        yAxes: [{ ticks: { min: 0, max: longBreakMaxEfficiency } }],
+      },
+    },
+  });
 
   clearInterval(myInterval);
   clearInterval(myInterval2);
