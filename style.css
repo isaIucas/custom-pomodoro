@@ -14,15 +14,7 @@ div {
   flex-direction: column;
   flex-grow: 1;
 }
-/*
-#customDiv{
-  display: flex;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
-  border-bottom: 1px solid black;
-  height: 16px;
-}
-*/
+
 #customDivTime {
   border-left: 1px solid black;
 }
@@ -38,8 +30,9 @@ div {
 }
 */
 
-#canvas {
+.canvas {
   display: flex;
+  justify-content: center;
 }
 
 #modal-content {
@@ -62,4 +55,9 @@ div {
   color: #000;
   text-decoration: none;
   cursor: pointer;
+}
+
+#current2 {
+  display: flex;
+  align-items: center;
 }

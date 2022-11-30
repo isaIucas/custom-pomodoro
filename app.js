@@ -1124,6 +1124,17 @@ function minutesToFormat(minutes) {
   return hourFormat + ":" + minuteFormat + ":00";
 }
 
+function secondsToFormat(seconds) {
+  hours = Math.floor(seconds / 3600);
+  minutes = Math.floor(seconds / 60);
+  seconds = seconds % 60;
+  hourFormat = hours < 10 ? "0" + hours : hours;
+  minuteFormat = minutes < 10 ? "0" + minutes : minutes;
+  secondFormat = seconds < 10 ? "0" + seconds : seconds;
+
+  return hourFormat + ":" + minuteFormat + ":" + secondFormat;
+}
+
 let firstButtonOfTheDay = false;
 
 function startPomodoro() {
@@ -1521,6 +1532,7 @@ function startLongBreak() {
     );
 
     desirePomodoro.push(document.getElementById("pomodoro-time").value);
+
     hours = Math.floor(totalSeconds2 / 3600);
     oldDate = currentDate;
     currentDate = new Date();
@@ -1694,17 +1706,163 @@ var div2 = document.querySelector("#test2");
 div2.appendChild(pauseButton);
 
 function finishButton() {
+  alarmSound.pause();
   finishedCollections[randomNumberIndex(finishedCollections.length)].play();
+  //somehow make this viable
   if (buttonPressed == "pomodoro") {
-    totalSecondsPomodoro += totalSeconds;
-    totalSeconds2PomodoroPause += totalSeconds2;
+    shortBreak.push("");
+    shortBreakPause.push("");
+    shortBreakDate.push("");
+    shortBreakDateDifference.push("");
+    desireShortBreak.push("");
+
+    longBreak.push("");
+    longBreakPause.push("");
+    longBreakDate.push("");
+    longBreakDateDifference.push("");
+    desireLongBreak.push("");
+
+    splitTrack.push(false);
+
+    pomodoro.push(
+      (hours > 9 ? hours : "0" + hours) +
+        ":" +
+        (minutes > 9 ? minutes : "0" + minutes) +
+        ":" +
+        (seconds > 9 ? seconds : "0" + seconds)
+    );
+
+    desirePomodoro.push(document.getElementById("pomodoro-time").value);
+
+    hours = Math.floor(totalSeconds2 / 3600);
+    oldDate = currentDate;
+    currentDate = new Date();
+    pomodoroDateDifference.push(
+      Math.floor((currentDate.getTime() - oldDate.getTime()) / 1000)
+    );
+    pomodoroDate.push(
+      oldDate.toLocaleString().split(", ")[1] +
+        "~" +
+        currentDate.toLocaleString().split(", ")[1]
+    );
+    if (seconds2 > 0) {
+      pomodoroPause.push(
+        " paused for " +
+          (hours2 > 9 ? hours2 : "0" + hours2) +
+          ":" +
+          (minutes2 > 9 ? minutes2 : "0" + minutes2) +
+          ":" +
+          (seconds2 > 9 ? seconds : "0" + seconds2)
+      );
+    } else {
+      pomodoroPause.push("");
+    }
   } else if (buttonPressed == "break") {
     totalSecondsBreak += totalSeconds;
     totalSeconds2BreakPause += totalSeconds2;
+
+    pomodoro.push("");
+    pomodoroPause.push("");
+    pomodoroDate.push("");
+    pomodoroDateDifference.push("");
+    desirePomodoro.push("");
+
+    longBreak.push("");
+    longBreakPause.push("");
+    longBreakDate.push("");
+    longBreakDateDifference.push("");
+    desireLongBreak.push("");
+
+    splitTrack.push(false);
+
+    shortBreak.push(
+      (hours > 9 ? hours : "0" + hours) +
+        ":" +
+        (minutes > 9 ? minutes : "0" + minutes) +
+        ":" +
+        (seconds > 9 ? seconds : "0" + seconds)
+    );
+
+    oldDate = currentDate;
+    currentDate = new Date();
+    secondsDifference = Math.floor(
+      (currentDate.getTime() - oldDate.getTime()) / 1000
+    );
+    shortBreakDateDifference.push(secondsDifference);
+    shortBreakDate.push(
+      oldDate.toLocaleString().split(", ")[1] +
+        "~" +
+        currentDate.toLocaleString().split(", ")[1]
+    );
+    desireShortBreak.push(
+      secondsDifference *
+        Number("0." + document.getElementById("break-time").value)
+    );
+
+    if (seconds2 > 0) {
+      shortBreakPause.push(
+        " paused for " +
+          (hours2 > 9 ? hours2 : "0" + hours2) +
+          ":" +
+          (minutes2 > 9 ? minutes2 : "0" + minutes2) +
+          ":" +
+          (seconds2 > 9 ? seconds2 : "0" + seconds2)
+      );
+    } else {
+      shortBreakPause.push("");
+    }
   } else if (buttonPressed == "long break") {
     totalSecondsLongBreak += totalSeconds;
     totalSeconds2LongBreakPause += totalSeconds2;
+
+    pomodoro.push("");
+    pomodoroPause.push("");
+    pomodoroDate.push("");
+    pomodoroDateDifference.push("");
+    desirePomodoro.push("");
+
+    shortBreak.push("");
+    shortBreakPause.push("");
+    shortBreakDate.push("");
+    shortBreakDateDifference.push("");
+    desireShortBreak.push("");
+
+    splitTrack.push(false);
+
+    longBreak.push(
+      (hours > 9 ? hours : "0" + hours) +
+        ":" +
+        (minutes > 9 ? minutes : "0" + minutes) +
+        ":" +
+        (seconds > 9 ? seconds : "0" + seconds)
+    );
+    desireLongBreak.push(document.getElementById("pomodoro-time").value);
+    oldDate = currentDate;
+    currentDate = new Date();
+    longBreakDateDifference.push(
+      Math.floor((currentDate.getTime() - oldDate.getTime()) / 1000)
+    );
+
+    longBreakDate.push(
+      oldDate.toLocaleString().split(", ")[1] +
+        "~" +
+        currentDate.toLocaleString().split(", ")[1]
+    );
+    if (seconds2 > 0) {
+      longBreakPause.push(
+        " paused for " +
+          (hours2 > 9 ? hours2 : "0" + hours2) +
+          ":" +
+          (minutes2 > 9 ? minutes2 : "0" + minutes2) +
+          ":" +
+          (seconds2 > 9 ? seconds2 : "0" + seconds2)
+      );
+    } else {
+      longBreakPause.push("");
+    }
   }
+
+  displayResult();
 
   var x_pomodoroValues = [];
   var y_pomodoroValues = [];
@@ -1835,6 +1993,126 @@ function finishButton() {
     },
   });
 
+  var pomodoroSeconds = 0;
+  var pomodoroPauseSeconds = 0;
+  var shortBreakSeconds = 0;
+  var shortBreakPauseSeconds = 0;
+  var longBreakSeconds = 0;
+  var longBreakPauseSeconds = 0;
+
+  console.log(pomodoro);
+  console.log(pomodoroPause);
+  console.log(shortBreak);
+  console.log(shortBreakPause);
+  console.log(longBreak);
+  console.log(longBreakPause);
+
+  for (i = 0; i < pomodoro.length; i++) {
+    if (pomodoro[i] != "") {
+      pomodoroSeconds += formatToSeconds(pomodoro[i]);
+      console.log(pomodoro[i]);
+      console.log(formatToSeconds(pomodoro[i]));
+    }
+  }
+  for (i = 0; i < pomodoroPause.length; i++) {
+    if (pomodoroPause[i] != "") {
+      pomodoroPauseSeconds += formatToSeconds(pomodoroPause[i]);
+    }
+  }
+  for (i = 0; i < shortBreak.length; i++) {
+    if (shortBreak[i] != "") {
+      shortBreakSeconds += formatToSeconds(shortBreak[i]);
+    }
+  }
+  for (i = 0; i < shortBreakPause.length; i++) {
+    if (shortBreakPause[i] != "") {
+      shortBreakPauseSeconds += formatToSeconds(shortBreakPause[i]);
+    }
+  }
+  for (i = 0; i < longBreak.length; i++) {
+    if (longBreak[i] != "") {
+      longBreakSeconds += formatToSeconds(longBreak[i]);
+    }
+  }
+  for (i = 0; i < longBreakPause.length; i++) {
+    if (longBreakPause[i] != "") {
+      longBreakPauseSeconds += formatToSeconds(longBreakPause[i]);
+    }
+  }
+  secondsToFormat(pomodoroSeconds);
+  secondsToFormat(pomodoroPauseSeconds);
+  secondsToFormat(shortBreakSeconds);
+  secondsToFormat(shortBreakPauseSeconds);
+  secondsToFormat(longBreakSeconds);
+  secondsToFormat(longBreakPauseSeconds);
+
+  pomodoroMinutes = Math.round(pomodoroSeconds / 60);
+  pomodoroPauseMinutes = Math.round(pomodoroPauseSeconds / 60);
+  shortBreakMinutes = Math.round(shortBreakSeconds / 60);
+  shortBreakPauseMinutes = Math.round(shortBreakPauseSeconds / 60);
+  longBreakMinutes = Math.round(longBreakSeconds / 60);
+  longBreakPauseMinutes = Math.round(longBreakPauseSeconds / 60);
+
+  console.log("");
+  console.log(pomodoroSeconds);
+  console.log(pomodoroPauseSeconds);
+  console.log(shortBreakSeconds);
+  console.log(shortBreakPauseSeconds);
+  console.log(longBreakSeconds);
+  console.log(longBreakPauseSeconds);
+  console.log("");
+
+  console.log(pomodoroMinutes);
+  console.log(pomodoroPauseMinutes);
+  console.log(shortBreakMinutes);
+  console.log(shortBreakPauseMinutes);
+  console.log(longBreakMinutes);
+  console.log(longBreakPauseMinutes);
+
+  var xValues = [
+    "Podoromo",
+    "Podoromo Pause",
+    "Short Break",
+    "Short Break Pause",
+    "Long Break",
+    "Long Break Pause",
+  ];
+  var yValues = [
+    pomodoroMinutes,
+    pomodoroPauseMinutes,
+    shortBreakMinutes,
+    shortBreakPauseMinutes,
+    longBreakMinutes,
+    longBreakPauseMinutes,
+  ];
+  var barColors = [
+    "#b91d47",
+    "#00aba9",
+    "#2b5797",
+    "#e8c3b9",
+    "LightGreen",
+    "Yellow",
+  ];
+
+  new Chart("myChart", {
+    type: "pie",
+    data: {
+      labels: xValues,
+      datasets: [
+        {
+          backgroundColor: barColors,
+          data: yValues,
+        },
+      ],
+    },
+    options: {
+      title: {
+        display: true,
+        text: "Your Result in rounded in minutes",
+      },
+    },
+  });
+
   clearInterval(myInterval);
   clearInterval(myInterval2);
 
@@ -1868,28 +2146,15 @@ function finishButton() {
 
   document.querySelector("#current2").innerHTML =
     "Today's Pomodoro: " +
-    displayTime(totalSecondsPomodoro) +
+    secondsToFormat(pomodoroSeconds) +
     " paused for : " +
-    displayTime(totalSeconds2PomodoroPause) +
+    secondsToFormat(pomodoroPauseSeconds) +
     "<br/>Today's break: " +
-    displayTime(totalSecondsBreak) +
+    secondsToFormat(shortBreakSeconds) +
     " paused for : " +
-    displayTime(totalSeconds2BreakPause) +
+    secondsToFormat(shortBreakPauseSeconds) +
     "<br/>Today's long break: " +
-    displayTime(totalSecondsLongBreak) +
+    secondsToFormat(longBreakSeconds) +
     " paused for " +
-    displayTime(totalSeconds2LongBreakPause);
-}
-
-function displayTime(customSeconds) {
-  seconds = customSeconds % 60;
-  minutes = Math.floor(customSeconds / 60);
-  hours = Math.floor(customSeconds / 3600);
-  string =
-    (hours > 9 ? hours : "0" + hours) +
-    ":" +
-    (minutes > 9 ? minutes : "0" + minutes) +
-    ":" +
-    (seconds > 9 ? seconds : "0" + seconds);
-  return string;
+    secondsToFormat(longBreakPauseSeconds);
 }
