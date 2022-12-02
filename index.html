@@ -13,7 +13,7 @@
     <div id="test">
       <h1>Custom Pomodoro</h1>
       <div id="test2">
-        <input id="pomodoro-time" type="number" value="1" />
+        <input id="pomodoro-time" type="number" value="25" />
         <button id="button1" onclick="startPomodoro()">Pomodoro</button>
         <input id="break-time" type="number" value="20" />%
         <button id="button2" onclick="startBreak()">Break</button>
@@ -66,8 +66,12 @@
         <canvas id="myChart" style="width: 100%; max-width: 600px"></canvas>
         <p id="current2"></p>
       </div>
-
-      <script></script>
+      <div class="canvas">
+        <canvas
+          id="overallChart"
+          style="width: 100%; max-width: 600px"
+        ></canvas>
+      </div>
     </div>
   </body>
 </html>

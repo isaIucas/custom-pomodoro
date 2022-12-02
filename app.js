@@ -14,6 +14,7 @@ let buttonPressed = "";
 
 //keeping track of data points
 //tracking current time and pause time
+//string = 00:00:00
 let pomodoro = [];
 let pomodoroPause = [];
 let shortBreak = [];
@@ -22,6 +23,7 @@ let longBreak = [];
 let longBreakPause = [];
 
 //store data points of desire pomodoro, break, and long break
+//string = 00:00:00
 let desirePomodoro = [];
 let desireShortBreak = [];
 let desireLongBreak = [];
@@ -34,7 +36,7 @@ let desireLongBreakFormat = [];
 let desireShortBreakPercentFormat = [];
 let desireLongBreakPercentFormat = [];
 
-//new tracking: Time Stamp
+//tracking: Time Stamp
 let oldDate;
 let CurrentDate;
 
@@ -45,21 +47,19 @@ let longBreakDate = [];
 let pomodoroDateDifference = [];
 let shortBreakDateDifference = [];
 let longBreakDateDifference = [];
-//new tracking: Notes
+
+//tracking: Notes
 let storeNotes = new Map();
 
-//new tracking: additional data/following score
+//tracking: additional data/following score
 let storeEfficiency = new Map();
 
 let splitTrack = [];
 
-//total accumulation of seconds for displaying results
-let totalSecondsPomodoro = 0;
-let totalSeconds2PomodoroPause = 0;
-let totalSecondsBreak = 0;
-let totalSeconds2BreakPause = 0;
-let totalSecondsLongBreak = 0;
-let totalSeconds2LongBreakPause = 0;
+//overall pattern chart that projects collective data
+let overallDuration = [];
+let fluctuationDuration = 0;
+let overallTimeOfDay = [];
 
 //alarm sounds
 let pomodoroCollections = [
@@ -775,7 +775,11 @@ function displayResult() {
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = pomodoroDate[i];
-    smallerBox2.textContent = pomodoro[i] + pomodoroPause[i];
+    smallerBox2.textContent =
+      secondsToFormat(pomodoroDateDifference[i]) +
+      "| " +
+      pomodoro[i] +
+      pomodoroPause[i];
 
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
@@ -888,7 +892,11 @@ function displayResult() {
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = shortBreakDate[i];
-    smallerBox2.textContent = shortBreak[i] + shortBreakPause[i];
+    smallerBox2.textContent =
+      secondsToFormat(shortBreakDateDifference[i]) +
+      "| " +
+      shortBreak[i] +
+      shortBreakPause[i];
 
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
@@ -1002,7 +1010,11 @@ function displayResult() {
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = longBreakDate[i];
-    smallerBox2.textContent = longBreak[i] + longBreakPause[i];
+    smallerBox2.textContent =
+      secondsToFormat(longBreakDateDifference[i]) +
+      "| " +
+      longBreak[i] +
+      longBreakPause[i];
 
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
@@ -1173,9 +1185,6 @@ function startPomodoro() {
   desireLongBreakPercentFormat.push("");
 
   if (buttonPressed == "break") {
-    totalSecondsBreak += totalSeconds;
-    totalSeconds2BreakPause += totalSeconds2;
-
     pomodoro.push("");
     pomodoroPause.push("");
     pomodoroDate.push("");
@@ -1227,9 +1236,6 @@ function startPomodoro() {
       shortBreakPause.push("");
     }
   } else if (buttonPressed == "long break") {
-    totalSecondsLongBreak += totalSeconds;
-    totalSeconds2LongBreakPause += totalSeconds2;
-
     pomodoro.push("");
     pomodoroPause.push("");
     pomodoroDate.push("");
@@ -1319,9 +1325,6 @@ function startPomodoro() {
 function startBreak() {
   hours = Math.floor(totalSeconds / 3600);
   hours2 = Math.floor(totalSeconds2 / 3600);
-
-  totalSecondsPomodoro += totalSeconds;
-  totalSeconds2PomodoroPause += totalSeconds2;
 
   alarmTime =
     Number(totalSeconds) *
@@ -1504,9 +1507,6 @@ function startLongBreak() {
   desireLongBreakPercentFormat.push(
     document.getElementById("long-break-time").value + "%"
   );
-
-  totalSecondsPomodoro += totalSeconds;
-  totalSeconds2PomodoroPause += totalSeconds2;
 
   if (buttonPressed == "pomodoro") {
     shortBreak.push("");
@@ -1708,7 +1708,6 @@ div2.appendChild(pauseButton);
 function finishButton() {
   alarmSound.pause();
   finishedCollections[randomNumberIndex(finishedCollections.length)].play();
-  //somehow make this viable
   if (buttonPressed == "pomodoro") {
     shortBreak.push("");
     shortBreakPause.push("");
@@ -1758,9 +1757,6 @@ function finishButton() {
       pomodoroPause.push("");
     }
   } else if (buttonPressed == "break") {
-    totalSecondsBreak += totalSeconds;
-    totalSeconds2BreakPause += totalSeconds2;
-
     pomodoro.push("");
     pomodoroPause.push("");
     pomodoroDate.push("");
@@ -1812,9 +1808,6 @@ function finishButton() {
       shortBreakPause.push("");
     }
   } else if (buttonPressed == "long break") {
-    totalSecondsLongBreak += totalSeconds;
-    totalSeconds2LongBreakPause += totalSeconds2;
-
     pomodoro.push("");
     pomodoroPause.push("");
     pomodoroDate.push("");
@@ -1933,7 +1926,7 @@ function finishButton() {
       legend: { display: false },
       title: {
         display: true,
-        text: "Pomodoro efficiency per session",
+        text: "Pomodoro efficiency per session (Higher = increase pomodoro, Lower = decrease pomodoro)",
       },
       scales: {
         yAxes: [{ ticks: { min: 0, max: pomodoroMaxEfficiency } }],
@@ -1959,7 +1952,7 @@ function finishButton() {
       legend: { display: false },
       title: {
         display: true,
-        text: "Short Break efficiency per session",
+        text: "Short Break efficiency per session (Higher = more rest. Lower = less rest)",
       },
       scales: {
         yAxes: [{ ticks: { min: 0, max: shortBreakMaxEfficiency } }],
@@ -1985,7 +1978,7 @@ function finishButton() {
       legend: { display: false },
       title: {
         display: true,
-        text: "Long Break efficiency per session",
+        text: "Long Break efficiency per session (Higher = more rest. Lower = less rest)",
       },
       scales: {
         yAxes: [{ ticks: { min: 0, max: longBreakMaxEfficiency } }],
@@ -2000,18 +1993,9 @@ function finishButton() {
   var longBreakSeconds = 0;
   var longBreakPauseSeconds = 0;
 
-  console.log(pomodoro);
-  console.log(pomodoroPause);
-  console.log(shortBreak);
-  console.log(shortBreakPause);
-  console.log(longBreak);
-  console.log(longBreakPause);
-
   for (i = 0; i < pomodoro.length; i++) {
     if (pomodoro[i] != "") {
       pomodoroSeconds += formatToSeconds(pomodoro[i]);
-      console.log(pomodoro[i]);
-      console.log(formatToSeconds(pomodoro[i]));
     }
   }
   for (i = 0; i < pomodoroPause.length; i++) {
@@ -2053,22 +2037,6 @@ function finishButton() {
   longBreakMinutes = Math.round(longBreakSeconds / 60);
   longBreakPauseMinutes = Math.round(longBreakPauseSeconds / 60);
 
-  console.log("");
-  console.log(pomodoroSeconds);
-  console.log(pomodoroPauseSeconds);
-  console.log(shortBreakSeconds);
-  console.log(shortBreakPauseSeconds);
-  console.log(longBreakSeconds);
-  console.log(longBreakPauseSeconds);
-  console.log("");
-
-  console.log(pomodoroMinutes);
-  console.log(pomodoroPauseMinutes);
-  console.log(shortBreakMinutes);
-  console.log(shortBreakPauseMinutes);
-  console.log(longBreakMinutes);
-  console.log(longBreakPauseMinutes);
-
   var xValues = [
     "Podoromo",
     "Podoromo Pause",
@@ -2086,12 +2054,12 @@ function finishButton() {
     longBreakPauseMinutes,
   ];
   var barColors = [
-    "#b91d47",
-    "#00aba9",
-    "#2b5797",
-    "#e8c3b9",
-    "LightGreen",
-    "Yellow",
+    "#C0392B",
+    "#D98880",
+    "#3498DB",
+    "#85C1E9",
+    "#2ECC71",
+    "#82E0AA",
   ];
 
   new Chart("myChart", {
@@ -2108,7 +2076,64 @@ function finishButton() {
     options: {
       title: {
         display: true,
-        text: "Your Result in rounded in minutes",
+        text: "Your result rounded in minutes",
+      },
+    },
+  });
+
+  //collective seconds data
+  for (i = 0; i < pomodoroDateDifference.length; i++) {
+    //goes up
+    if (pomodoroDateDifference[i] != "") {
+      fluctuationDuration += pomodoroDateDifference[i];
+    }
+    //goes down
+    if (shortBreakDateDifference[i] != "") {
+      fluctuationDuration -= shortBreakDateDifference[i];
+    }
+    //goes down
+    if (longBreakDateDifference[i] != "") {
+      fluctuationDuration -= longBreakDateDifference[i];
+    }
+    overallDuration.push(Math.round(fluctuationDuration / 60));
+  }
+
+  //collective date data
+  for (i = 0; i < pomodoroDate.length; i++) {
+    if (pomodoroDate[i] != "") {
+      overallTimeOfDay.push(pomodoroDate[i].split("~")[1]);
+    } else if (shortBreakDate[i] != "") {
+      overallTimeOfDay.push(shortBreakDate[i].split("~")[1]);
+    } else if (longBreakDate[i] != "") {
+      overallTimeOfDay.push(longBreakDate[i].split("~")[1]);
+    }
+  }
+  console.log(fluctuationDuration);
+  console.log(overallDuration);
+  console.log(overallTimeOfDay);
+
+  new Chart("overallChart", {
+    type: "line",
+    data: {
+      labels: overallTimeOfDay,
+      datasets: [
+        {
+          fill: false,
+          lineTension: 0,
+          backgroundColor: "rgba(0,0,255,1.0)",
+          borderColor: "rgba(0,0,255,0.1)",
+          data: overallDuration,
+        },
+      ],
+    },
+    options: {
+      legend: { display: false },
+      title: {
+        display: true,
+        text: "Duration of minutes by time (Big picture)",
+      },
+      scales: {
+        yAxes: [{ ticks: { min: -400, max: 400 } }],
       },
     },
   });
