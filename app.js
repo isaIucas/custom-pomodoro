@@ -185,7 +185,11 @@ function calculation() {
     ":" +
     (seconds > 9 ? seconds : "0" + seconds);
 
-  if (Math.ceil(Number(alarmTime)) == Number(seconds)) {
+  /*
+  console.log("alarmTime: " + Number(alarmTime));
+  console.log("seconds: " + Number(Math.floor(countSecond / 1000)));
+*/
+  if (Math.ceil(Number(alarmTime)) == Number(Math.floor(countSecond / 1000))) {
     alarmSound.play();
     alarmSoundisPlaying = true;
   }
@@ -448,7 +452,6 @@ function finishModal(columnIndex, rowIndex, which) {
           (formatToSeconds(desire) / (Number(number2) * 60)) *
           100
         ).toFixed(0);
-        console.log("formatToSeconds(desire): " + formatToSeconds(desire));
 
         storeEfficiency.set("custom2DesireTime" + rowIndex, [
           " Desire: " + desire,
@@ -1219,10 +1222,7 @@ function startPomodoro() {
     (alarmMinutes > 9 ? alarmMinutes : "0" + alarmMinutes) +
     ":" +
     (alarmSeconds > 9 ? alarmSeconds : "0" + alarmSeconds);
-  /*
-  hours = Math.floor(countSecond / 3600);
-  hours2 = Math.floor(countPauseSecond / 3600);
-*/
+
   desirePomodoroFormat.push(timeFormat);
   desireShortBreakFormat.push("");
   desireLongBreakFormat.push("");
@@ -1372,17 +1372,10 @@ function startBreak() {
   startAgain = true;
 
   start = new Date();
-  /*
-  hours = Math.floor(countSecond / 3600000);
-  hours2 = Math.floor(countPauseSecond / 3600000);
-*/
-  if (firstButtonOfTheDay == false) {
-    alarmTime = 0;
-  } else {
-    alarmTime =
-      Math.floor(countSecond / 1000) *
-      Number("0." + document.getElementById("break-time").value);
-  }
+
+  alarmTime =
+    Math.floor(countSecond / 1000) *
+    Number("0." + document.getElementById("break-time").value);
 
   let totalAlarmSeconds = alarmTime;
   alarmSeconds = totalAlarmSeconds % 60;
@@ -1421,7 +1414,6 @@ function startBreak() {
     desireLongBreak.push("");
 
     splitTrack.push(false);
-    console.log("hours: " + hours);
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
         ":" +
@@ -1538,17 +1530,10 @@ function startLongBreak() {
   startAgain = true;
 
   start = new Date();
-  /*
-  hours = Math.floor(countSecond / 3600);
-  hours2 = Math.floor(countPauseSecond / 3600);
-*/
-  if (firstButtonOfTheDay == false) {
-    alarmTime = 0;
-  } else {
-    alarmTime =
-      Math.floor(countSecond / 1000) *
-      Number("0." + document.getElementById("long-break-time").value);
-  }
+
+  alarmTime =
+    Math.floor(countSecond / 1000) *
+    Number("0." + document.getElementById("long-break-time").value);
 
   let totalAlarmSeconds = alarmTime;
   alarmSeconds = totalAlarmSeconds % 60;
@@ -2176,9 +2161,6 @@ function finishButton() {
       overallTimeOfDay.push(longBreakDate[i].split("~")[1]);
     }
   }
-  console.log(fluctuationDuration);
-  console.log(overallDuration);
-  console.log(overallTimeOfDay);
 
   new Chart("overallChart", {
     type: "line",
