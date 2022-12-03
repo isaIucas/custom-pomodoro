@@ -1,13 +1,14 @@
 //count current time
-let totalSeconds = 0;
 let seconds = 0;
 let minutes = 0;
+let hours = 0;
 let myInterval;
 
 //count pause time
-let totalSeconds2 = 0;
 let seconds2 = 0;
 let minutes2 = 0;
+let hours2 = 0;
+
 let myInterval2;
 
 let buttonPressed = "";
@@ -149,12 +150,32 @@ let alarmTime;
 let alarmSoundisPlaying = false;
 let pauseSound = pauseCollections[randomNumberIndex(pauseCollections.length)];
 
+let start;
+let countSecond = 0;
+let accumulateSeconds = 0;
+let startDifferenceResume = false;
+let startAgain = false;
+
+let startPause;
+let countPauseSecond = 0;
+let accumulatePauseSeconds = 0;
+let startPauseDifferenceResume = false;
+
 // Update the count down every 1 second
 function calculation() {
-  totalSeconds = totalSeconds + 1;
-  seconds = totalSeconds % 60;
-  minutes = Math.floor(totalSeconds / 60);
-  hours = Math.floor(totalSeconds / 3600);
+  let current = new Date();
+  if (startDifferenceResume) {
+    accumulateSeconds = countSecond;
+    startDifferenceResume = false;
+  } else if (startAgain) {
+    accumulateSeconds = 0;
+    startAgain = false;
+  }
+  countSecond = accumulateSeconds + (+current - +start); //current - past
+
+  seconds = Math.floor(countSecond / 1000) % 60;
+  minutes = Math.floor(countSecond / 60000) % 60;
+  hours = Math.floor(countSecond / 3600000) % 24;
 
   // Output the result in an element with id="demo"
   document.getElementById("demo").innerHTML =
@@ -164,21 +185,27 @@ function calculation() {
     ":" +
     (seconds > 9 ? seconds : "0" + seconds);
 
-  if (Math.ceil(Number(alarmTime)) == Number(totalSeconds)) {
+  if (Math.ceil(Number(alarmTime)) == Number(seconds)) {
     alarmSound.play();
     alarmSoundisPlaying = true;
   }
 }
 
-function calculation2() {
-  totalSeconds2 = totalSeconds2 + 1;
-  seconds2 = totalSeconds2 % 60;
-  minutes2 = Math.floor(totalSeconds2 / 60);
-  hours = Math.floor(totalSeconds2 / 3600);
+function calculationPause() {
+  let current = new Date();
+  if (startPauseDifferenceResume) {
+    accumulatePauseSeconds = countPauseSecond;
+    startPauseDifferenceResume = false;
+  }
+  countPauseSecond = accumulatePauseSeconds + (+current - +startPause); //current - past
+
+  seconds2 = Math.floor(countPauseSecond / 1000) % 60;
+  minutes2 = Math.floor(countPauseSecond / 60000) % 60;
+  hours2 = Math.floor(countPauseSecond / 3600000) % 24;
 
   // Output the result in an element with id="demo"
   document.getElementById("demo2").innerHTML =
-    (hours > 9 ? hours : "0" + hours) +
+    (hours2 > 9 ? hours2 : "0" + hours2) +
     ":" +
     (minutes2 > 9 ? minutes2 : "0" + minutes2) +
     ":" +
@@ -412,17 +439,22 @@ function finishModal(columnIndex, rowIndex, which) {
           " Efficiency: " + scoreEfficiency + " %",
           Number(scoreEfficiency),
         ]);
-
-        var scoreEfficiency = (
-          ((Number(number1) * 60) / formatToSeconds(shortBreak[rowIndex])) *
+        let desire = secondsToFormat(
+          Number(number1) *
+            60 *
+            Number("0." + document.getElementById("break-time").value)
+        );
+        var scoreEfficiency2 = (
+          (formatToSeconds(desire) / (Number(number2) * 60)) *
           100
         ).toFixed(0);
+        console.log("formatToSeconds(desire): " + formatToSeconds(desire));
 
         storeEfficiency.set("custom2DesireTime" + rowIndex, [
-          " Desire: " + minutesToFormat(Number(number1)),
+          " Desire: " + desire,
           " | " + document.getElementById("break-time").value + "%" + " | ",
-          " Efficiency: " + scoreEfficiency + " %",
-          Number(scoreEfficiency),
+          " Efficiency: " + scoreEfficiency2 + " %",
+          Number(scoreEfficiency2),
         ]);
 
         longBreakDate[rowIndex] = "";
@@ -459,19 +491,24 @@ function finishModal(columnIndex, rowIndex, which) {
           Number(scoreEfficiency),
         ]);
 
-        var scoreEfficiency = (
-          ((Number(number1) * 60) / formatToSeconds(longBreak[rowIndex])) *
+        desire = secondsToFormat(
+          Number(number1) *
+            60 *
+            Number("0." + document.getElementById("long-break-time").value)
+        );
+
+        var scoreEfficiency2 = (
+          (formatToSeconds(desire) / (Number(number3) * 60)) *
           100
         ).toFixed(0);
-
         storeEfficiency.set("custom3DesireTime" + rowIndex, [
-          " Desire: " + minutesToFormat(Number(number1)),
+          " Desire: " + desire,
           " | " +
             document.getElementById("long-break-time").value +
             "%" +
             " | ",
-          " Efficiency: " + scoreEfficiency + " %",
-          Number(scoreEfficiency),
+          " Efficiency: " + scoreEfficiency2 + " %",
+          Number(scoreEfficiency2),
         ]);
         shortBreakDate[rowIndex] = "";
         shortBreak[rowIndex] = "";
@@ -493,7 +530,7 @@ function finishModal(columnIndex, rowIndex, which) {
         ).toFixed(0);
 
         storeEfficiency.set("custom2DesireTime" + rowIndex, [
-          " Desire: " + minutesToFormat(0),
+          " Desire: " + secondsToFormat(0),
           " | " + document.getElementById("break-time").value + "%" + " | ",
           " Efficiency: " + scoreEfficiency + " %",
           Number(scoreEfficiency),
@@ -521,7 +558,7 @@ function finishModal(columnIndex, rowIndex, which) {
         ).toFixed(0);
 
         storeEfficiency.set("custom3DesireTime" + rowIndex, [
-          " Desire: " + minutesToFormat(0),
+          " Desire: " + secondsToFormat(0),
           " | " +
             document.getElementById("long-break-time").value +
             "%" +
@@ -762,7 +799,8 @@ function displayResult() {
     box.style.border_left = "1px solid black";
     box.style.border_right = "1px solid black";
     box.style.border_bottom = "1px solid black";
-    box.style.height = "16px";
+    box.style.height = "32px";
+    box.style.alignItems = "center";
 
     var smallerBox = document.createElement("div");
     var smallerBoxAtr = document.createAttribute("id");
@@ -776,10 +814,10 @@ function displayResult() {
 
     smallerBox.textContent = pomodoroDate[i];
     smallerBox2.textContent =
-      secondsToFormat(pomodoroDateDifference[i]) +
-      "| " +
       pomodoro[i] +
-      pomodoroPause[i];
+      pomodoroPause[i] +
+      "=> " +
+      secondsToFormat(pomodoroDateDifference[i]);
 
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
@@ -879,7 +917,8 @@ function displayResult() {
     box.style.border_left = "1px solid black";
     box.style.border_right = "1px solid black";
     box.style.border_bottom = "1px solid black";
-    box.style.height = "16px";
+    box.style.height = "32px";
+    box.style.alignItems = "center";
 
     var smallerBox = document.createElement("div");
     var smallerBoxAtr = document.createAttribute("id");
@@ -893,10 +932,11 @@ function displayResult() {
 
     smallerBox.textContent = shortBreakDate[i];
     smallerBox2.textContent =
-      secondsToFormat(shortBreakDateDifference[i]) +
-      "| " +
       shortBreak[i] +
-      shortBreakPause[i];
+      shortBreakPause[i] +
+      "=> " +
+      secondsToFormat(shortBreakDateDifference[i]);
+    "[ " + secondsToFormat(shortBreakDateDifference[i]) + "] ";
 
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
@@ -997,7 +1037,8 @@ function displayResult() {
     box.style.border_left = "1px solid black";
     box.style.border_right = "1px solid black";
     box.style.border_bottom = "1px solid black";
-    box.style.height = "16px";
+    box.style.height = "32px";
+    box.style.alignItems = "center";
 
     var smallerBox = document.createElement("div");
     var smallerBoxAtr = document.createAttribute("id");
@@ -1011,10 +1052,11 @@ function displayResult() {
 
     smallerBox.textContent = longBreakDate[i];
     smallerBox2.textContent =
-      secondsToFormat(longBreakDateDifference[i]) +
-      "| " +
       longBreak[i] +
-      longBreakPause[i];
+      longBreakPause[i] +
+      "=> " +
+      secondsToFormat(longBreakDateDifference[i]);
+    "[ " + secondsToFormat(longBreakDateDifference[i]) + "] ";
 
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
@@ -1128,21 +1170,21 @@ function formatToSeconds(format) {
   return seconds;
 }
 
-function minutesToFormat(minutes) {
-  hours = Math.floor(minutes / 60);
-  minutes = minutes % 60;
-  hourFormat = hours < 10 ? "0" + hours : hours;
-  minuteFormat = minutes < 10 ? "0" + minutes : minutes;
+function minutesToFormat(min) {
+  hr = Math.floor(min / 60);
+  min = min % 60;
+  hourFormat = hr < 10 ? "0" + hr : hr;
+  minuteFormat = min < 10 ? "0" + min : min;
   return hourFormat + ":" + minuteFormat + ":00";
 }
 
-function secondsToFormat(seconds) {
-  hours = Math.floor(seconds / 3600);
-  minutes = Math.floor(seconds / 60);
-  seconds = seconds % 60;
-  hourFormat = hours < 10 ? "0" + hours : hours;
-  minuteFormat = minutes < 10 ? "0" + minutes : minutes;
-  secondFormat = seconds < 10 ? "0" + seconds : seconds;
+function secondsToFormat(sec) {
+  hr = Math.floor(sec / 3600);
+  min = Math.floor(sec / 60);
+  sec = sec % 60;
+  hourFormat = hr < 10 ? "0" + hr : hr;
+  minuteFormat = min < 10 ? "0" + min : min;
+  secondFormat = sec < 10 ? "0" + sec : sec;
 
   return hourFormat + ":" + minuteFormat + ":" + secondFormat;
 }
@@ -1150,10 +1192,14 @@ function secondsToFormat(seconds) {
 let firstButtonOfTheDay = false;
 
 function startPomodoro() {
+  startAgain = true;
+  start = new Date();
+
   if (firstButtonOfTheDay == false) {
     currentDate = new Date();
     firstButtonOfTheDay = true;
   }
+
   pauseSound = pauseCollections[randomNumberIndex(pauseCollections.length)];
   alarmSound.currentTime = 0;
 
@@ -1173,10 +1219,10 @@ function startPomodoro() {
     (alarmMinutes > 9 ? alarmMinutes : "0" + alarmMinutes) +
     ":" +
     (alarmSeconds > 9 ? alarmSeconds : "0" + alarmSeconds);
-
-  hours = Math.floor(totalSeconds / 3600);
-  hours2 = Math.floor(totalSeconds2 / 3600);
-
+  /*
+  hours = Math.floor(countSecond / 3600);
+  hours2 = Math.floor(countPauseSecond / 3600);
+*/
   desirePomodoroFormat.push(timeFormat);
   desireShortBreakFormat.push("");
   desireLongBreakFormat.push("");
@@ -1293,10 +1339,10 @@ function startPomodoro() {
   totalAlarmSeconds = alarmTime * 60;
   var paragraph = document.querySelector("#demo");
   paragraph.textContent = "00:00:00";
-  totalSeconds = 0;
+  countSecond = 0;
   var paragraph2 = document.querySelector("#demo2");
   paragraph2.textContent = "00:00:00";
-  totalSeconds2 = 0;
+  countPauseSecond = 0;
   myInterval = setInterval(calculation, 1000);
   var button1 = document.querySelector("#button1");
   var button2 = document.querySelector("#button2");
@@ -1323,12 +1369,21 @@ function startPomodoro() {
 }
 
 function startBreak() {
-  hours = Math.floor(totalSeconds / 3600);
-  hours2 = Math.floor(totalSeconds2 / 3600);
+  startAgain = true;
 
-  alarmTime =
-    Number(totalSeconds) *
-    Number("0." + document.getElementById("break-time").value);
+  start = new Date();
+  /*
+  hours = Math.floor(countSecond / 3600000);
+  hours2 = Math.floor(countPauseSecond / 3600000);
+*/
+  if (firstButtonOfTheDay == false) {
+    alarmTime = 0;
+  } else {
+    alarmTime =
+      Math.floor(countSecond / 1000) *
+      Number("0." + document.getElementById("break-time").value);
+  }
+
   let totalAlarmSeconds = alarmTime;
   alarmSeconds = totalAlarmSeconds % 60;
   alarmMinutes = Math.floor(totalAlarmSeconds / 60);
@@ -1366,7 +1421,7 @@ function startBreak() {
     desireLongBreak.push("");
 
     splitTrack.push(false);
-
+    console.log("hours: " + hours);
     pomodoro.push(
       (hours > 9 ? hours : "0" + hours) +
         ":" +
@@ -1377,7 +1432,7 @@ function startBreak() {
 
     desirePomodoro.push(document.getElementById("pomodoro-time").value);
 
-    hours = Math.floor(totalSeconds2 / 3600);
+    //hours = Math.floor(countPauseSecond / 3600);
     oldDate = currentDate;
     currentDate = new Date();
     pomodoroDateDifference.push(
@@ -1417,10 +1472,10 @@ function startBreak() {
   clearInterval(myInterval);
   var paragraph = document.querySelector("#demo");
   paragraph.textContent = "00:00:00";
-  totalSeconds = 0;
+  countSecond = 0;
   var paragraph2 = document.querySelector("#demo2");
   paragraph2.textContent = "00:00:00";
-  totalSeconds2 = 0;
+  countPauseSecond = 0;
   myInterval = setInterval(calculation, 1000);
   var button1 = document.querySelector("#button1");
   var button2 = document.querySelector("#button2");
@@ -1472,20 +1527,29 @@ function startBreak() {
 }
 
 function reset() {
-  totalSeconds = 0;
+  countSecond = 0;
   seconds = 0;
   minutes = 0;
-  totalSeconds2 = 0;
+  countPauseSecond = 0;
   seconds2 = 0;
   minutes2 = 0;
 }
 function startLongBreak() {
-  hours = Math.floor(totalSeconds / 3600);
-  hours2 = Math.floor(totalSeconds2 / 3600);
+  startAgain = true;
 
-  alarmTime =
-    Number(totalSeconds) *
-    Number("0." + document.getElementById("long-break-time").value);
+  start = new Date();
+  /*
+  hours = Math.floor(countSecond / 3600);
+  hours2 = Math.floor(countPauseSecond / 3600);
+*/
+  if (firstButtonOfTheDay == false) {
+    alarmTime = 0;
+  } else {
+    alarmTime =
+      Math.floor(countSecond / 1000) *
+      Number("0." + document.getElementById("long-break-time").value);
+  }
+
   let totalAlarmSeconds = alarmTime;
   alarmSeconds = totalAlarmSeconds % 60;
   alarmMinutes = Math.floor(totalAlarmSeconds / 60);
@@ -1533,7 +1597,7 @@ function startLongBreak() {
 
     desirePomodoro.push(document.getElementById("pomodoro-time").value);
 
-    hours = Math.floor(totalSeconds2 / 3600);
+    //hours = Math.floor(countPauseSecond / 3600);
     oldDate = currentDate;
     currentDate = new Date();
     pomodoroDateDifference.push(
@@ -1575,10 +1639,10 @@ function startLongBreak() {
   clearInterval(myInterval);
   var paragraph = document.querySelector("#demo");
   paragraph.textContent = "00:00:00";
-  totalSeconds = 0;
+  countSecond = 0;
   var paragraph2 = document.querySelector("#demo2");
   paragraph2.textContent = "00:00:00";
-  totalSeconds2 = 0;
+  countPauseSecond = 0;
   myInterval = setInterval(calculation, 1000);
   var button1 = document.querySelector("#button1");
   var button2 = document.querySelector("#button2");
@@ -1630,6 +1694,8 @@ function startLongBreak() {
 }
 
 function myPause() {
+  startPauseDifferenceResume = true;
+  startPause = new Date();
   alarmSound.pause();
   pauseSound.loop = true;
   pauseSound.play();
@@ -1656,10 +1722,12 @@ function myPause() {
   button3.setAttributeNode(battr4);
   long_break_time.setAttributeNode(battr5);
 
-  myInterval2 = setInterval(calculation2, 1000);
+  myInterval2 = setInterval(calculationPause, 1000);
 }
 
 function myResume() {
+  startDifferenceResume = true;
+  start = new Date();
   pauseSound.loop = false;
   pauseSound.pause();
   if (alarmSoundisPlaying) {
@@ -1733,7 +1801,7 @@ function finishButton() {
 
     desirePomodoro.push(document.getElementById("pomodoro-time").value);
 
-    hours = Math.floor(totalSeconds2 / 3600);
+    //hours = Math.floor(countPauseSecond / 3600);
     oldDate = currentDate;
     currentDate = new Date();
     pomodoroDateDifference.push(
