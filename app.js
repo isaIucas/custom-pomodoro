@@ -617,7 +617,7 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
   var modalContentp = document.createElement("p");
   if (which == "pomodoro") {
     modalContentp.textContent =
-      "Splitting Important minutes: " +
+      "Splitting pomodoro minutes: " +
       pomodoroDate[rowIndex] +
       " " +
       pomodoro[rowIndex] +
@@ -625,7 +625,7 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
     originalNumber = Math.floor(pomodoroDateDifference[rowIndex] / 60);
   } else if (which == "short break") {
     modalContentp.textContent =
-      "Splitting semi-important minutes: " +
+      "Splitting short break minutes: " +
       shortBreakDate[rowIndex] +
       " " +
       shortBreak[rowIndex] +
@@ -633,7 +633,7 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
     originalNumber = Math.floor(shortBreakDateDifference[rowIndex] / 60);
   } else if (which == "long break") {
     modalContentp.textContent =
-      "Splitting break minutes: " +
+      "Splitting long break minutes: " +
       longBreakDate[rowIndex] +
       " " +
       longBreak[rowIndex] +
@@ -770,9 +770,9 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
 
 //This is important for retaining data for displaying
 function displayResult() {
-  document.getElementById("column1Header").innerHTML = "Important:";
-  document.getElementById("column2Header").innerHTML = "Semi-Important:";
-  document.getElementById("column3Header").innerHTML = "Break:";
+  document.getElementById("column1Header").innerHTML = "Pomodoro:";
+  document.getElementById("column2Header").innerHTML = "Short Break:";
+  document.getElementById("column3Header").innerHTML = "Long Break:";
   document.getElementById("column1Content").innerHTML = "";
   document.getElementById("column2Content").innerHTML = "";
   document.getElementById("column3Content").innerHTML = "";
@@ -1318,7 +1318,7 @@ function startPomodoro() {
   reset();
   buttonPressed = "pomodoro";
 
-  current.textContent = "Important [" + timeFormat + "] Important";
+  current.textContent = "Pomodoro [" + timeFormat + "] Pomodoro";
   clearInterval(myInterval);
   totalAlarmSeconds = alarmTime * 60;
   var paragraph = document.querySelector("#demo");
@@ -1444,7 +1444,7 @@ function startBreak() {
 
   buttonPressed = "break";
 
-  current.textContent = "Semi-Important [" + timeFormat + "] Semi-Important";
+  current.textContent = "Break [" + timeFormat + "] Break";
   clearInterval(myInterval);
   var paragraph = document.querySelector("#demo");
   paragraph.textContent = "00:00:00";
@@ -1603,7 +1603,7 @@ function startLongBreak() {
 
   buttonPressed = "long break";
 
-  current.textContent = "Break [" + timeFormat + "] Break";
+  current.textContent = "Long Break [" + timeFormat + "] Long Break";
 
   clearInterval(myInterval);
   var paragraph = document.querySelector("#demo");
@@ -1963,7 +1963,7 @@ function finishButton() {
       legend: { display: false },
       title: {
         display: true,
-        text: "Important efficiency per session (Higher = increase important, Lower = decrease important)",
+        text: "Pomodoro efficiency per session (Higher = increase pomodoro, Lower = decrease pomodoro)",
       },
       scales: {
         yAxes: [{ ticks: { min: 0, max: pomodoroMaxEfficiency } }],
@@ -1989,7 +1989,7 @@ function finishButton() {
       legend: { display: false },
       title: {
         display: true,
-        text: "Semi-important efficiency per session (Higher = increase semi-important. Lower = decrease semi-important)",
+        text: "Short Break efficiency per session (Higher = more rest. Lower = less rest)",
       },
       scales: {
         yAxes: [{ ticks: { min: 0, max: shortBreakMaxEfficiency } }],
@@ -2015,7 +2015,7 @@ function finishButton() {
       legend: { display: false },
       title: {
         display: true,
-        text: "Break efficiency per session (Higher = more rest. Lower = less rest)",
+        text: "Long Break efficiency per session (Higher = more rest. Lower = less rest)",
       },
       scales: {
         yAxes: [{ ticks: { min: 0, max: longBreakMaxEfficiency } }],
@@ -2075,12 +2075,12 @@ function finishButton() {
   longBreakPauseMinutes = Math.round(longBreakPauseSeconds / 60);
 
   var xValues = [
-    "Important",
-    "Important Pause",
-    "Semi-Important",
-    "Semi-Important Pause",
-    "Break",
-    "Break Pause",
+    "Podoromo",
+    "Podoromo Pause",
+    "Short Break",
+    "Short Break Pause",
+    "Long Break",
+    "Long Break Pause",
   ];
   var yValues = [
     pomodoroMinutes,
@@ -2208,15 +2208,15 @@ function finishButton() {
   resumeButton.setAttributeNode(attr9);
 
   document.querySelector("#current2").innerHTML =
-    "Today's Important: " +
+    "Today's Pomodoro: " +
     secondsToFormat(pomodoroSeconds) +
     " paused for : " +
     secondsToFormat(pomodoroPauseSeconds) +
-    "<br/>Today's Semi-Important: " +
+    "<br/>Today's break: " +
     secondsToFormat(shortBreakSeconds) +
     " paused for : " +
     secondsToFormat(shortBreakPauseSeconds) +
-    "<br/>Today's break: " +
+    "<br/>Today's long break: " +
     secondsToFormat(longBreakSeconds) +
     " paused for " +
     secondsToFormat(longBreakPauseSeconds);
