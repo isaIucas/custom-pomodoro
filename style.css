@@ -30,11 +30,6 @@ div {
 }
 */
 
-.canvas {
-  display: flex;
-  justify-content: center;
-}
-
 #modal-content {
   background-color: #fefefe;
   margin: auto;
@@ -60,4 +55,10 @@ div {
 #current2 {
   display: flex;
   align-items: center;
+}
+
+#player {
+  position: absolute;
+  left: 80vw;
+  top: 3vh;
 }

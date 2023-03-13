@@ -11,14 +11,14 @@
   </head>
   <body>
     <div id="test">
-      <h1>Custom Pomodoro</h1>
+      <h1>yourFlow</h1>
       <div id="test2">
         <input id="pomodoro-time" type="number" value="25" />
-        <button id="button1" onclick="startPomodoro()">Pomodoro</button>
+        <button id="button1" onclick="startPomodoro()">Important</button>
         <input id="break-time" type="number" value="20" />%
-        <button id="button2" onclick="startBreak()">Break</button>
+        <button id="button2" onclick="startBreak()">Semi-Important</button>
         <input id="long-break-time" type="number" value="60" />%
-        <button id="button3" onclick="startLongBreak()">Long Break</button>
+        <button id="button3" onclick="startLongBreak()">Break</button>
         <p id="current">----</p>
         <p id="demo">00:00:00</p>
       </div>
@@ -48,7 +48,7 @@
       </div>
       <div id="testerino"></div>
       <button id="button4" onclick=" finishButton()" disabled>Finish</button>
-      <div class="canvas">
+      <div class="canvas1">
         <canvas
           id="pomodoroChart"
           style="width: 100%; max-width: 600px"
@@ -62,16 +62,64 @@
           style="width: 100%; max-width: 600px"
         ></canvas>
       </div>
-      <div class="canvas">
+      <div class="canvas2">
         <canvas id="myChart" style="width: 100%; max-width: 600px"></canvas>
         <p id="current2"></p>
       </div>
-      <div class="canvas">
+      <div class="canvas2">
         <canvas
           id="overallChart"
           style="width: 100%; max-width: 600px"
         ></canvas>
       </div>
     </div>
+    <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+    <div id="player"></div>
+
+    <script>
+      // 2. This code loads the IFrame Player API code asynchronously.
+      var tag = document.createElement("script");
+
+      tag.src = "https://www.youtube.com/iframe_api";
+      var firstScriptTag = document.getElementsByTagName("script")[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      // 3. This function creates an <iframe> (and YouTube player)
+      //    after the API code downloads.
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player("player", {
+          height: "200",
+          width: "350",
+          videoId: "jfKfPfyJRdk",
+          playerVars: {
+            playsinline: 1,
+          },
+          events: {
+            onReady: onPlayerReady,
+            onStateChange: onPlayerStateChange,
+          },
+        });
+      }
+
+      // 4. The API will call this function when the video player is ready.
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+
+      // 5. The API calls this function when the player's state changes.
+      //    The function indicates that when playing a video (state=1),
+      //    the player should play for six seconds and then stop.
+      var done = false;
+      function onPlayerStateChange(event) {
+        if (event.data == YT.PlayerState.PLAYING && !done) {
+          setTimeout(stopVideo, 6000);
+          done = true;
+        }
+      }
+      function stopVideo() {
+        player.stopVideo();
+      }
+    </script>
   </body>
 </html>

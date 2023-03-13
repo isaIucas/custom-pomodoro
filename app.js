@@ -390,9 +390,7 @@ function finishModal(columnIndex, rowIndex, which) {
         pomodoroDate[rowIndex] = whichWhichDate[rowIndex];
         pomodoroDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
 
-        Number(number1) < 10
-          ? (pomodoro[rowIndex] = "00:0" + Number(number1) + ":00")
-          : (pomodoro[rowIndex] = "00:" + Number(number1) + ":00");
+        pomodoro[rowIndex] = minutesToFormat(Number(number1));
 
         var scoreEfficiency = (
           (formatToSeconds(pomodoro[rowIndex]) /
@@ -422,12 +420,8 @@ function finishModal(columnIndex, rowIndex, which) {
         pomodoroDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
         shortBreakDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
 
-        Number(number1) < 10
-          ? (pomodoro[rowIndex] = "00:0" + Number(number1) + ":00")
-          : (pomodoro[rowIndex] = "00:" + Number(number1) + ":00");
-        Number(number2) < 10
-          ? (shortBreak[rowIndex] = "00:0" + Number(number2) + ":00")
-          : (shortBreak[rowIndex] = "00:" + Number(number2) + ":00");
+        pomodoro[rowIndex] = minutesToFormat(Number(number1));
+        shortBreak[rowIndex] = minutesToFormat(Number(number2));
 
         var scoreEfficiency = (
           (formatToSeconds(pomodoro[rowIndex]) /
@@ -472,12 +466,8 @@ function finishModal(columnIndex, rowIndex, which) {
         pomodoroDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
         longBreakDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
 
-        Number(number1) < 10
-          ? (pomodoro[rowIndex] = "00:0" + Number(number1) + ":00")
-          : (pomodoro[rowIndex] = "00:" + Number(number1) + ":00");
-        Number(number3) < 10
-          ? (longBreak[rowIndex] = "00:0" + Number(number3) + ":00")
-          : (longBreak[rowIndex] = "00:" + Number(number3) + ":00");
+        pomodoro[rowIndex] = minutesToFormat(Number(number1));
+        longBreak[rowIndex] = minutesToFormat(Number(number3));
 
         var scoreEfficiency = (
           (formatToSeconds(pomodoro[rowIndex]) /
@@ -523,9 +513,7 @@ function finishModal(columnIndex, rowIndex, which) {
         shortBreakDate[rowIndex] = whichWhichDate[rowIndex];
         shortBreakDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
 
-        Number(number2) < 10
-          ? (shortBreak[rowIndex] = "00:0" + Number(number2) + ":00")
-          : (shortBreak[rowIndex] = "00:" + Number(number2) + ":00");
+        shortBreak[rowIndex] = minutesToFormat(Number(number2));
 
         var scoreEfficiency = (
           (0 / formatToSeconds(shortBreak[rowIndex])) *
@@ -551,9 +539,7 @@ function finishModal(columnIndex, rowIndex, which) {
         longBreakDate[rowIndex] = whichWhichDate[rowIndex];
         longBreakDateDifference[rowIndex] = whichWhichDateDifference[rowIndex];
 
-        Number(number3) < 10
-          ? (longBreak[rowIndex] = "00:0" + Number(number3) + ":00")
-          : (longBreak[rowIndex] = "00:" + Number(number3) + ":00");
+        longBreak[rowIndex] = minutesToFormat(Number(number3));
 
         var scoreEfficiency = (
           (0 / formatToSeconds(longBreak[rowIndex])) *
@@ -631,7 +617,7 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
   var modalContentp = document.createElement("p");
   if (which == "pomodoro") {
     modalContentp.textContent =
-      "Splitting pomodoro minutes: " +
+      "Splitting Important minutes: " +
       pomodoroDate[rowIndex] +
       " " +
       pomodoro[rowIndex] +
@@ -639,7 +625,7 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
     originalNumber = Math.floor(pomodoroDateDifference[rowIndex] / 60);
   } else if (which == "short break") {
     modalContentp.textContent =
-      "Splitting short break minutes: " +
+      "Splitting semi-important minutes: " +
       shortBreakDate[rowIndex] +
       " " +
       shortBreak[rowIndex] +
@@ -647,7 +633,7 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
     originalNumber = Math.floor(shortBreakDateDifference[rowIndex] / 60);
   } else if (which == "long break") {
     modalContentp.textContent =
-      "Splitting long break minutes: " +
+      "Splitting break minutes: " +
       longBreakDate[rowIndex] +
       " " +
       longBreak[rowIndex] +
@@ -784,9 +770,9 @@ function splitTime(columnIndex, customDiv, customSplit, rowIndex, which) {
 
 //This is important for retaining data for displaying
 function displayResult() {
-  document.getElementById("column1Header").innerHTML = "Pomodoro:";
-  document.getElementById("column2Header").innerHTML = "Short Break:";
-  document.getElementById("column3Header").innerHTML = "Long Break:";
+  document.getElementById("column1Header").innerHTML = "Important:";
+  document.getElementById("column2Header").innerHTML = "Semi-Important:";
+  document.getElementById("column3Header").innerHTML = "Break:";
   document.getElementById("column1Content").innerHTML = "";
   document.getElementById("column2Content").innerHTML = "";
   document.getElementById("column3Content").innerHTML = "";
@@ -816,11 +802,10 @@ function displayResult() {
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = pomodoroDate[i];
-    smallerBox2.textContent =
-      pomodoro[i] +
-      pomodoroPause[i] +
+    smallerBox2.textContent = pomodoro[i] + pomodoroPause[i]; /*+
       "=> " +
       secondsToFormat(pomodoroDateDifference[i]);
+      */
 
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
@@ -934,12 +919,11 @@ function displayResult() {
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = shortBreakDate[i];
-    smallerBox2.textContent =
-      shortBreak[i] +
-      shortBreakPause[i] +
+    smallerBox2.textContent = shortBreak[i] + shortBreakPause[i]; /*+
       "=> " +
       secondsToFormat(shortBreakDateDifference[i]);
     "[ " + secondsToFormat(shortBreakDateDifference[i]) + "] ";
+    */
 
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
@@ -1054,12 +1038,12 @@ function displayResult() {
     smallerBox2.setAttributeNode(smallerBox2Atr);
 
     smallerBox.textContent = longBreakDate[i];
-    smallerBox2.textContent =
-      longBreak[i] +
-      longBreakPause[i] +
+    smallerBox2.textContent = longBreak[i] + longBreakPause[i];
+    /*+
       "=> " +
       secondsToFormat(longBreakDateDifference[i]);
     "[ " + secondsToFormat(longBreakDateDifference[i]) + "] ";
+    */
 
     parentBox.appendChild(box);
     box.appendChild(smallerBox);
@@ -1334,7 +1318,7 @@ function startPomodoro() {
   reset();
   buttonPressed = "pomodoro";
 
-  current.textContent = "Pomodoro [" + timeFormat + "] Pomodoro";
+  current.textContent = "Important [" + timeFormat + "] Important";
   clearInterval(myInterval);
   totalAlarmSeconds = alarmTime * 60;
   var paragraph = document.querySelector("#demo");
@@ -1460,7 +1444,7 @@ function startBreak() {
 
   buttonPressed = "break";
 
-  current.textContent = "Break [" + timeFormat + "] Break";
+  current.textContent = "Semi-Important [" + timeFormat + "] Semi-Important";
   clearInterval(myInterval);
   var paragraph = document.querySelector("#demo");
   paragraph.textContent = "00:00:00";
@@ -1619,7 +1603,7 @@ function startLongBreak() {
 
   buttonPressed = "long break";
 
-  current.textContent = "Long Break [" + timeFormat + "] Long Break";
+  current.textContent = "Break [" + timeFormat + "] Break";
 
   clearInterval(myInterval);
   var paragraph = document.querySelector("#demo");
@@ -1979,7 +1963,7 @@ function finishButton() {
       legend: { display: false },
       title: {
         display: true,
-        text: "Pomodoro efficiency per session (Higher = increase pomodoro, Lower = decrease pomodoro)",
+        text: "Important efficiency per session (Higher = increase important, Lower = decrease important)",
       },
       scales: {
         yAxes: [{ ticks: { min: 0, max: pomodoroMaxEfficiency } }],
@@ -2005,7 +1989,7 @@ function finishButton() {
       legend: { display: false },
       title: {
         display: true,
-        text: "Short Break efficiency per session (Higher = more rest. Lower = less rest)",
+        text: "Semi-important efficiency per session (Higher = increase semi-important. Lower = decrease semi-important)",
       },
       scales: {
         yAxes: [{ ticks: { min: 0, max: shortBreakMaxEfficiency } }],
@@ -2031,7 +2015,7 @@ function finishButton() {
       legend: { display: false },
       title: {
         display: true,
-        text: "Long Break efficiency per session (Higher = more rest. Lower = less rest)",
+        text: "Break efficiency per session (Higher = more rest. Lower = less rest)",
       },
       scales: {
         yAxes: [{ ticks: { min: 0, max: longBreakMaxEfficiency } }],
@@ -2091,12 +2075,12 @@ function finishButton() {
   longBreakPauseMinutes = Math.round(longBreakPauseSeconds / 60);
 
   var xValues = [
-    "Podoromo",
-    "Podoromo Pause",
-    "Short Break",
-    "Short Break Pause",
-    "Long Break",
-    "Long Break Pause",
+    "Important",
+    "Important Pause",
+    "Semi-Important",
+    "Semi-Important Pause",
+    "Break",
+    "Break Pause",
   ];
   var yValues = [
     pomodoroMinutes,
@@ -2139,25 +2123,29 @@ function finishButton() {
     //goes up
     if (pomodoroDateDifference[i] != "") {
       fluctuationDuration += pomodoroDateDifference[i];
+      overallDuration.push(Math.round(fluctuationDuration / 60));
     }
     //goes down
     if (shortBreakDateDifference[i] != "") {
       fluctuationDuration -= shortBreakDateDifference[i];
+      overallDuration.push(Math.round(fluctuationDuration / 60));
     }
     //goes down
     if (longBreakDateDifference[i] != "") {
       fluctuationDuration -= longBreakDateDifference[i];
+      overallDuration.push(Math.round(fluctuationDuration / 60));
     }
-    overallDuration.push(Math.round(fluctuationDuration / 60));
   }
 
   //collective date data
   for (i = 0; i < pomodoroDate.length; i++) {
     if (pomodoroDate[i] != "") {
       overallTimeOfDay.push(pomodoroDate[i].split("~")[1]);
-    } else if (shortBreakDate[i] != "") {
+    }
+    /*else*/ if (shortBreakDate[i] != "") {
       overallTimeOfDay.push(shortBreakDate[i].split("~")[1]);
-    } else if (longBreakDate[i] != "") {
+    }
+    /*else*/ if (longBreakDate[i] != "") {
       overallTimeOfDay.push(longBreakDate[i].split("~")[1]);
     }
   }
@@ -2220,15 +2208,15 @@ function finishButton() {
   resumeButton.setAttributeNode(attr9);
 
   document.querySelector("#current2").innerHTML =
-    "Today's Pomodoro: " +
+    "Today's Important: " +
     secondsToFormat(pomodoroSeconds) +
     " paused for : " +
     secondsToFormat(pomodoroPauseSeconds) +
-    "<br/>Today's break: " +
+    "<br/>Today's Semi-Important: " +
     secondsToFormat(shortBreakSeconds) +
     " paused for : " +
     secondsToFormat(shortBreakPauseSeconds) +
-    "<br/>Today's long break: " +
+    "<br/>Today's break: " +
     secondsToFormat(longBreakSeconds) +
     " paused for " +
     secondsToFormat(longBreakPauseSeconds);
